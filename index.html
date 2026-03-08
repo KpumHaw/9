@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>Рослина Карпат — Натуральні БАДи та Фітопрепарати</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<style>
+:root {
+  --green: #166534;
+  --light-green: #4ade80;
+  --beige: #f5f0e9;
+  --cream: #fffaf2;
+  --accent: #d97706;
+  --gray: #666;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--cream);
+  color: #1f2937;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+header {
+  text-align:center;
+  padding:60px 20px 40px;
+  background: linear-gradient(135deg, var(--green), var(--light-green));
+  color: white;
+}
+header h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); font-weight:900; margin-bottom:12px; text-shadow:0 4px 15px rgba(0,0,0,0.3); }
+header p { font-size: clamp(1.1rem, 3vw, 1.35rem); opacity:0.95; }
+.cart-icon {
+  position:fixed; top:20px; right:20px; width:60px; height:60px;
+  background:var(--green); color:white; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-size:26px;
+  cursor:pointer; z-index:9999; box-shadow:0 8px 25px rgba(0,0,0,0.3);
+  transition:all 0.3s;
+}
+.cart-icon:hover { transform:scale(1.1); }
+.cart-count {
+  position:absolute; top:-6px; right:-6px; background:#ffc107;
+  color:#000; width:28px; height:28px; border-radius:50%;
+  font-weight:bold; font-size:15px; display:flex; align-items:center; justify-content:center;
+}
+.filters {
+  text-align:center; padding:30px 15px; background:var(--beige);
+  display:flex; flex-wrap:wrap; justify-content:center; gap:12px;
+}
+.filter-btn {
+  padding:12px 24px; border:none; border-radius:50px;
+  background:rgba(22,101,52,0.12); color:var(--green); font-weight:600;
+  cursor:pointer; transition:all 0.3s; font-size:1rem; white-space:nowrap;
+}
+.filter-btn.active, .filter-btn:hover {
+  background:var(--green); color:white; transform:translateY(-2px); box-shadow:0 6px 15px rgba(22,101,52,0.3);
+}
+.search-box { text-align:center; padding:0 15px 30px; background:var(--beige); }
+.search-box input {
+  width:90%; max-width:700px; padding:14px 24px; border:none; border-radius:50px;
+  background:white; box-shadow:0 4px 15px rgba(0,0,0,0.08); font-size:1.05rem; transition:all 0.3s;
+}
+.search-box input:focus { outline:none; box-shadow:0 6px 20px rgba(22,101,52,0.2); border:2px solid var(--green); }
+.container { max-width:1480px; margin:0 auto; padding:0 15px 60px; }
+.grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:28px; justify-content:center;
+}
+.card {
+  background:white; border-radius:20px; overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1); transition:all 0.35s; cursor:pointer; max-width:420px;
+}
+.card:hover { transform:translateY(-12px); box-shadow:0 20px 45px rgba(0,0,0,0.18); }
+.img { height:300px; background-size:cover; background-position:center; position:relative; }
+.badge {
+  position:absolute; top:14px; left:14px; background:var(--green); color:white;
+  padding:6px 16px; border-radius:30px; font-weight:bold; font-size:13px;
+}
+.info { padding:20px; }
+.title { font-size:18px; font-weight:700; margin-bottom:8px; line-height:1.4; min-height:44px; }
+.rating { color:#ffc107; font-size:18px; margin:6px 0; }
+.price { font-size:26px; font-weight:900; color:var(--green); }
+.old-price { font-size:17px; color:#999; text-decoration:line-through; margin-left:10px; }
+/* Модальні вікна */
+.modal {
+  position:fixed; inset:0; background:rgba(0,0,0,0.75); display:none;
+  align-items:center; justify-content:center; z-index:10000; padding:15px; backdrop-filter:blur(4px);
+}
+.modal.show { display:flex; }
+.modal-content {
+  background:white; border-radius:24px; width:100%; max-width:920px;
+  max-height:94vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  transform:scale(0.95); transition:transform 0.3s;
+}
+.modal.show .modal-content { transform:scale(1); }
+.modal-header {
+  background:var(--green); color:white; padding:20px 30px;
+  display:flex; justify-content:space-between; align-items:center; border-radius:24px 24px 0 0;
+}
+.modal-header h2 { font-size:24px; margin:0; }
+.modal-close { background:none; border:none; color:white; font-size:40px; cursor:pointer; line-height:1; }
+/* Кошик */
+.cart-modal .modal-content { max-width:580px; }
+.cart-item {
+  display:flex; justify-content:space-between; align-items:center; padding:16px 0;
+  border-bottom:1px solid #eee; font-size:17px;
+}
+.cart-item button {
+  background:#e74c3c; color:white; border:none; width:36px; height:36px;
+  border-radius:50%; font-size:20px; cursor:pointer; transition:background 0.2s;
+}
+.cart-item button:hover { background:#c0392b; }
+.total-price { font-size:28px; font-weight:900; text-align:right; margin:30px 0 25px; color:var(--green); }
+/* Форма */
+#checkoutForm label { font-weight:600; margin:18px 0 6px; display:block; font-size:15px; }
+#checkoutForm input, #checkoutForm select, #checkoutForm textarea {
+  width:100%; padding:12px 16px; border:1px solid #ddd; border-radius:12px; font-size:16px; transition:border 0.3s;
+}
+#checkoutForm input:focus, #checkoutForm select:focus, #checkoutForm textarea:focus {
+  border-color:var(--green); outline:none; box-shadow:0 0 0 3px rgba(22,101,52,0.15);
+}
+.checkout-btn {
+  width:100%; padding:18px; background:var(--green); color:white; border:none;
+  border-radius:50px; font-size:19px; font-weight:bold; cursor:pointer; margin-top:25px; transition:all 0.3s;
+}
+.checkout-btn:hover { background:#14532d; transform:translateY(-2px); box-shadow:0 8px 20px rgba(22,101,52,0.3); }
+/* Адаптив */
+@media (max-width:768px) {
+  header { padding:50px 15px 30px; }
+  .filters { padding:20px 10px; gap:10px; }
+  .filter-btn { padding:10px 18px; font-size:0.95rem; }
+  .grid { gap:20px; }
+  .img { height:260px; }
+}
+@media (max-width:480px) {
+  .search-box input { width:96%; padding:12px 18px; }
+  .cart-icon { width:54px; height:54px; font-size:24px; top:15px; right:15px; }
+  .cart-count { width:24px; height:24px; font-size:13px; }
+}
+#modalImg {
+  max-width: 100%;
+  max-height: 60vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 20px auto;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Рослина Карпат</h1>
+  <p>Натуральні фітопрепарати та БАДи • Сила Карпат у кожній капсулі</p>
+</header>
+
+<div class="cart-icon" onclick="toggleCart()">
+  <i class="fas fa-shopping-cart"></i>
+  <div class="cart-count" id="cartCount">0</div>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" data-cat="all">Всі товари</button>
+  <button class="filter-btn" data-cat="antisep">Природні антисептики</button>
+  <button class="filter-btn" data-cat="balm">Косметичні бальзами</button>
+  <button class="filter-btn" data-cat="vitamins">Вітаміни та мінерали</button>
+  <button class="filter-btn" data-cat="detox">Очищення організму</button>
+  <button class="filter-btn" data-cat="cold">Допомога при застуді</button>
+  <button class="filter-btn" data-cat="antiparasite">Боротьба з паразитами</button>
+  <button class="filter-btn" data-cat="endo">Ендокринна система</button>
+  <button class="filter-btn" data-cat="heart">Здоров'я серця та судин</button>
+  <button class="filter-btn" data-cat="joints">Опорно-руховий апарат</button>
+  <button class="filter-btn" data-cat="nervous">Міцні нерви</button>
+  <button class="filter-btn" data-cat="microflora">Відновлення мікрофлори</button>
+  <button class="filter-btn" data-cat="digestion">Нормалізація травлення</button>
+  <button class="filter-btn" data-cat="liver">Відновлення печінки</button>
+  <button class="filter-btn" data-cat="eyes">Відновлення зору</button>
+  <button class="filter-btn" data-cat="pancreas">Підшлункова залоза</button>
+  <button class="filter-btn" data-cat="tea">Фіточаї</button>
+  <button class="filter-btn" data-cat="antifungus">Проти грибків та бактерій</button>
+  <button class="filter-btn" data-cat="urinary">Сечовивідна система</button>
+  <button class="filter-btn" data-cat="care">Доглядові засоби</button>
+  <button class="filter-btn" data-cat="home">Засоби для дому</button>
+  <button class="filter-btn" data-cat="complex">Лікувальні комплекси</button>
+  <button class="filter-btn" data-cat="weight">Контроль ваги</button>
+  <button class="filter-btn" data-cat="female">Жіноче здоров'я</button>
+  <button class="filter-btn" data-cat="male-female">Чоловіче та жіноче здоров'я</button>
+  <button class="filter-btn" data-cat="male">Чоловіче здоров'я</button>
+  <button class="filter-btn" data-cat="antiallergy">Проти алергії</button>
+  <button class="filter-btn" data-cat="sleep">Здоровий сон</button>
+  <button class="filter-btn" data-cat="brain">Покращення пам'яті та уваги</button>
+</div>
+
+<div class="search-box">
+  <input id="search" placeholder="🔍 Пошук товарів..." type="text">
+</div>
+
+<div class="container">
+  <div class="grid" id="products"></div>
+</div>
+
+<!-- Модальне вікно товару -->
+<div class="modal" id="productModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle"></h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <img id="modalImg" class="modal-img" src="" alt="Товар">
+      <div>
+        <div class="specs" id="modalSpecs"></div>
+        <div class="reviews" id="modalReviews"></div>
+        <button class="add-to-cart-btn checkout-btn" onclick="addToCart(currentProduct)">
+          Додати в кошик — <span id="modalPrice"></span> ₴
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Кошик -->
+<div class="modal cart-modal" id="cartModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Ваш кошик (<span id="cartItemsCount">0</span>)</h2>
+      <button class="modal-close" onclick="toggleCart()">×</button>
+    </div>
+    <div style="padding:25px;">
+      <div id="cartItems"></div>
+      <div class="total-price">Разом: <span id="cartTotal">0</span> ₴</div>
+      <button class="checkout-btn" onclick="checkout()">Оформити замовлення</button>
+      <button style="width:100%; margin-top:15px; padding:16px; background:var(--gray); color:white; border:none; border-radius:50px; font-size:17px;" onclick="toggleCart()">
+        Продовжити покупки
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Оформлення замовлення -->
+<div class="modal" id="checkoutModal">
+  <div class="modal-content" style="max-width:580px;">
+    <div class="modal-header">
+      <h2>Оформлення замовлення</h2>
+      <button class="modal-close" onclick="closeCheckoutModal()">×</button>
+    </div>
+    <div style="padding:25px;">
+      <form id="checkoutForm">
+        <label>Прізвище та Ім'я *</label>
+        <input type="text" id="fullName" required placeholder="Іванов Іван">
+
+        <label>Телефон *</label>
+        <input type="tel" id="phone" required placeholder="+380 XX XXX XX XX">
+
+        <label>Місто / село *</label>
+        <input type="text" id="city" required placeholder="Київ / Дубно / с. Великі Гаї">
+
+        <label>Служба доставки *</label>
+        <select id="deliveryService" required>
+          <option value="">Оберіть...</option>
+          <option value="Нова Пошта">Нова Пошта</option>
+          <option value="Укрпошта">Укрпошта</option>
+        </select>
+
+        <label>Відділення / адреса *</label>
+        <input type="text" id="address" required placeholder="Відділення №5 або вул. Шевченка 12">
+
+        <label>Індекс (якщо Укрпошта)</label>
+        <input type="text" id="zip" placeholder="00000">
+
+        <label>Коментар до замовлення</label>
+        <textarea id="comment" placeholder="Бажано після 18:00 / дзвінок не потрібен тощо"></textarea>
+
+        <button type="button" onclick="submitOrder()" class="checkout-btn">
+          Підтвердити та оформити
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+
+// Повний список товарів з img:"" (без картинок)
+const products = [
+  // Природні антисептики — 4
+  {id:1, cat:"antisep", title:"Аргентум - S", img:"https://i.postimg.cc/Kz3vch8N/Znimok-ekrana-2026-03-01-195101.png", price:260, stars:"★★★★★", rating:"4.9 (1240)", specs:"• Срібло колоїдне<br>Аргентум – S від компанії Рослина Карпат — це природний антисептичний засіб на основі сполук срібла, призначений для підтримки захисних функцій організму. Препарат використовується для профілактики та допоміжної підтримки при бактеріальних і вірусних навантаженнях. Має виражені антимікробні властивості та може застосовуватися для обробки слизових оболонок і шкіри. Підходить для використання в період сезонних застуд, а також для щоденної гігієнічної підтримки. Рекомендований як додатковий засіб у комплексному догляді за здоров’ям родини.", reviews:"Чудово для ран і горла ★★★★★"},
+  {id:2, cat:"antisep", title:"Аргентум - SE", img:"https://i.postimg.cc/zGq7mDfF/Znimok-ekrana-2026-03-01-183630.png", price:260, stars:"★★★★★", rating:"4.8 (980)", specs:"• Посилена формула<br>Аргентум – SE — це вдосконалена формула природного антисептика з посиленими захисними властивостями. Засіб сприяє пригніченню розвитку патогенних мікроорганізмів та підтримує природний імунний бар’єр організму. Використовується для профілактики інфекційних процесів, а також для догляду за шкірою при подразненнях чи мікропошкодженнях. Завдяки м’якій дії підходить для регулярного застосування. Рекомендований у періоди підвищеного ризику вірусних та бактеріальних інфекцій.", reviews:"Швидко знімає запалення ★★★★★"},
+  {id:3, cat:"antisep", title:"Аргентум - C", img:"https://i.ibb.co/prPDhd9S/PXL-20260225-182800092.jpg", price:275, stars:"★★★★★", rating:"5.0 (1560)", specs:"• Концентрований<br>Аргентум – С — засіб на основі срібла для підтримки захисних функцій організму. Сприяє пригніченню росту патогенних мікроорганізмів і підтримує природний імунітет. Може застосовуватися для профілактики та в період підвищеного ризику вірусних і бактеріальних інфекцій. Має антисептичні та протизапальні властивості. Підходить для курсового використання за рекомендацією спеціаліста.", reviews:"Найкращий натуральний антисептик ★★★★★"},
+  {id:4, cat:"antisep", title:"Хлорофіліпт Р.К.", img:"https://i.ibb.co/svxGDtB5/PXL-20260225-181257710.jpg", price:520, old:614, badge:"-18%", stars:"★★★★☆", rating:"4.7 (890)", specs:"• Екстракт евкаліпта<br>Хлорофіліпт Р.К. — натуральний засіб на основі рослинних екстрактів з вираженими антисептичними властивостями. Допомагає зменшити запалення та підтримує здоров’я слизових оболонок. Сприяє очищенню організму від патогенних мікроорганізмів. Може застосовуватися для підтримки дихальної системи та ротової порожнини. Підходить для комплексного використання в сезон застуд.", reviews:"Дуже ефективний при ангіні ★★★★☆"},
+
+  // Косметичні бальзами — 4
+  {id:5, cat:"balm", title:"Буковиця карпатська", img:"https://i.postimg.cc/nhn28VL5/Znimok-ekrana-2026-03-01-183933.png", price:380, stars:"★★★★★", rating:"4.9 (670)", specs:"• Заспокоює шкіру<br>Буквиця карпатська — натуральний косметичний бальзам на основі рослинної сировини, зібраної в екологічно чистих регіонах Карпат. Засіб сприяє заспокоєнню шкіри, зменшує подразнення та підтримує природний баланс. Рекомендується для догляду за чутливою та проблемною шкірою. Активні компоненти рослини допомагають зменшити почервоніння та покращити загальний стан шкірного покриву. Підходить для щоденного використання всією родиною.", reviews:"Шкіра м'яка як шовк ★★★★★"},
+  {id:6, cat:"balm", title:"Чорнокорінь карпатський", img:"https://i.postimg.cc/FHhptFKB/Znimok-ekrana-2026-03-01-184021.png", price:380, stars:"★★★★★", rating:"4.8 (750)", specs:"• Протизапальний<br>Чорнокорінь карпатський — рослинний бальзам із вираженими заспокійливими та відновлювальними властивостями. Використовується для догляду за шкірою при сухості, лущенні та дискомфорті. Засіб сприяє регенерації тканин та підтримує природні процеси відновлення. Завдяки натуральному складу підходить для локального нанесення на проблемні ділянки. Рекомендований як допоміжний косметичний засіб при щоденному догляді.", reviews:"Біль зникає швидко ★★★★★"},
+  {id:7, cat:"balm", title:"Календула карпатська", img:"https://i.ibb.co/RTTshqSw/PXL-20260225-181806356.jpg", price:380, stars:"★★★★★", rating:"4.9 (1120)", specs:"• Загоювальний<br>Календула карпатська — натуральний бальзам із екстрактом календули, відомої своїми протизапальними та загоювальними властивостями. Засіб допомагає зменшити подразнення, підтримує регенерацію шкіри та сприяє її пом’якшенню. Рекомендований для догляду за сухою, чутливою або схильною до подразнень шкірою. Підходить для використання після впливу сонця, вітру чи холоду. Має м’яку текстуру та легко наноситься.", reviews:"Ранки гояться за ніч ★★★★★"},
+  {id:8, cat:"balm", title:"Прополіс карпатський", img:"https://i.postimg.cc/6pBcs6Q1/Znimok-ekrana-2026-03-01-183909.png", price:380, stars:"★★★★★", rating:"4.9 (980)", specs:"• Антибактеріальний<br>Прополіс карпатський — косметичний бальзам на основі натурального прополісу, що має виражені захисні та відновлювальні властивості. Засіб сприяє очищенню шкіри, підтримує її природний імунітет та допомагає зменшити запальні прояви. Рекомендований для догляду за проблемною та схильною до висипань шкірою. Завдяки природному складу може використовуватися для локального нанесення при дрібних пошкодженнях шкіри. Підходить для щоденного догляду та підтримки здорового вигляду шкіри.", reviews:"Чудовий для опіків ★★★★★"},
+
+  // Вітаміни та мінерали — 11
+  {id:9, cat:"vitamins", title:"Вітамін - Pro", img:"https://i.postimg.cc/nhn28VL5/Znimok-ekrana-2026-03-01-183933.png", price:415, stars:"★★★★★", rating:"4.9 (1340)", specs:"• Комплексний<br>Вітамін-Pro Комплексний вітамінний препарат для щоденної підтримки організму. Містить збалансовану формулу вітамінів і мінералів для підтримки енергії, імунітету та працездатності. Рекомендується при підвищених фізичних та розумових навантаженнях. Сприяє зменшенню втоми та покращенню загального самопочуття. Підходить для курсового прийому в періоди сезонного ослаблення організму.", reviews:"Сили на весь день ★★★★★"},
+  {id:10, cat:"vitamins", title:"Гемоферум", img:"https://i.postimg.cc/x1gR9rkB/Znimok-ekrana-2026-03-01-191207.png", price:315, stars:"★★★★☆", rating:"4.7 (980)", specs:"• Залізо + вітаміни<br>Гемоферум Комплекс із залізом та вітамінами для підтримки нормального рівня гемоглобіну. Сприяє покращенню кисневого обміну в організмі та підвищенню витривалості. Рекомендується при зниженні рівня заліза та загальній слабкості. Підтримує енергетичний баланс і працездатність. Підходить для профілактичного та курсового застосування.", reviews:"Гемоглобін піднявся ★★★★☆"},
+  {id:11, cat:"vitamins", title:"Спіруліна Р.К. Chlorella", img:"https://i.ibb.co/twDpqLPX/PXL-20260225-183058378.jpg", price:450, old:350, badge:"ХІТ", stars:"★★★★★", rating:"4.9 (1240)", specs:"• Суперфуд<br>Спіруліна Р.К. Натуральна мікроводорость, що є джерелом білка, хлорофілу, вітамінів і мікроелементів. Сприяє очищенню організму та підтримці імунної системи. Допомагає відновлювати сили після фізичних навантажень. Рекомендується для загального зміцнення організму. Підходить для тривалого застосування.", reviews:"Енергія і краса ★★★★★"},
+  {id:12, cat:"vitamins", title:"НЕДОСТУПНО", img:"", price:000000000, stars:"★★★★★", rating:"4.8 (820)", specs:"• Детокс + вітаміни", reviews:"Очищення на клітинному рівні ★★★★★"},
+  {id:13, cat:"vitamins", title:"Вітамін С+", img:"https://i.postimg.cc/QdjmLNMR/Znimok-ekrana-2026-03-01-184207.png", price:350, stars:"★★★★★", rating:"5.0 (1560)", specs:"• З бузком і шипшиною<br>Вітамін С+ Потужна формула вітаміну С з рослинними екстрактами. Підтримує імунну систему та сприяє зниженню втоми. Має антиоксидантні властивості та захищає клітини від оксидативного стресу. Рекомендується в сезон застуд і при підвищених навантаженнях. Підходить для щоденного застосування.", reviews:"Найкращий вітамін С ★★★★★"},
+  {id:14, cat:"vitamins", title:"Omega-3 Gold & Ocean", img:"https://i.ibb.co/MxLB2Ryw/PXL-20260225-182639826.jpg", price:705, stars:"★★★★★", rating:"4.9 (950)", specs:"• EPA + DHA<br>mega-3 Gold & Ocean Комплекс поліненасичених жирних кислот EPA та DHA. Підтримує здоров’я серця, судин та мозкової активності. Сприяє нормалізації рівня холестерину. Рекомендується для підтримки концентрації та пам’яті. Підходить для регулярного прийому дорослим та дітям.", reviews:"Холестерин в нормі ★★★★★"},
+  {id:15, cat:"vitamins", title:"Вітамін D3", img:"https://i.ibb.co/VW3CXWpK/PXL-20260225-182607310.jpg", price:320, stars:"★★★★★", rating:"4.8 (1100)", specs:"• 500 мг<br>Вітамін D3 Необхідний для підтримки імунної системи та міцності кісток. Сприяє засвоєнню кальцію і фосфору. Рекомендується в осінньо-зимовий період або при дефіциті сонячного світла. Підтримує загальний тонус організму. Підходить для профілактичного прийому.", reviews:"Зима пройшла без застуд ★★★★★"},
+  {id:16, cat:"vitamins", title:"Цинк", img:"https://i.ibb.co/KjqTwtL5/PXL-20260225-182907080.jpg", price:425, stars:"★★★★☆", rating:"4.7 (650)", specs:"• 25 мг<br>Цинк Мікроелемент, важливий для імунітету та здоров’я шкіри. Сприяє нормальному функціонуванню гормональної системи. Підтримує здоров’я волосся і нігтів. Рекомендується при зниженні опірності організму. Підходить для курсового застосування.", reviews:"Волосся стало густішим ★★★★☆"},
+  {id:17, cat:"vitamins", title:"Селен", img:"https://i.postimg.cc/4d5V5Zsr/Znimok-ekrana-2026-03-01-193139.png", price:365, stars:"★★★★★", rating:"4.8 (720)", specs:"Селен Потужний антиоксидант для захисту клітин організму. Підтримує роботу щитоподібної залози та імунної системи. Сприяє уповільненню процесів передчасного старіння. Рекомендується при підвищених навантаженнях та дефіциті мікроелементів. Підходить для профілактичного прийому.", reviews:"Щитоподібна в нормі ★★★★★"},
+  {id:18, cat:"vitamins", title:"Коензим Q 10 - Pro", img:"https://i.postimg.cc/gJd38rFD/Znimok-ekrana-2026-03-01-192316.png", price:650, stars:"★★★★★", rating:"4.9 (920)", specs:"• 400 мг<br>Коензим Q10 – Pro Антиоксидант для підтримки енергії клітин та молодості шкіри. Сприяє покращенню роботи серцево-судинної системи. Підтримує природні процеси відновлення організму. Рекомендується для активних людей та у віці 30+. Підходить для курсового прийому.", reviews:"Серце дякує ★★★★★"},
+  {id:19, cat:"vitamins", title:"Біотин - Beauty", img:"https://i.postimg.cc/dVJ6MQ0N/Znimok-ekrana-2026-03-01-183831.png", price:355, stars:"★★★★★", rating:"4.9 (890)", specs:"• Біотин – Beauty Вітамін краси для волосся, нігтів та шкіри. Сприяє зміцненню структури волосся та зменшенню ламкості нігтів. Підтримує здоровий вигляд шкіри. Рекомендується при сезонному випадінні волосся. Підходить для регулярного застосування.", reviews:"Волосся блищить ★★★★★"},
+  {id:20, cat:"vitamins", title:"Колагенум - Beauty", img:"https://i.ibb.co/4RKdVCds/PXL-20260225-181359433.jpg", price:475, stars:"★★★★★", rating:"4.9 (890)", specs:"• Колаген + гіалурон<br>Колагенум – Beauty Комплекс колагену з компонентами для підтримки еластичності шкіри. Сприяє зменшенню сухості та підтримує тонус. Підтримує здоров’я суглобів та зв’язок. Рекомендується для збереження молодості шкіри. Підходить для курсового прийому.", reviews:"Зморшки зменшилися ★★★★★"},
+
+  // Очищення організму — 2
+  {id:21, cat:"detox", title:"Лімфорен", img:"https://i.ibb.co/VWjp9fwv/PXL-20260225-181951814.jpg", price:340, stars:"★★★★★", rating:"4.8 (760)", specs:"Лімфорен Комплекс для підтримки лімфатичної системи та очищення організму. Сприяє виведенню надлишкової рідини та токсинів. Підтримує легкість і загальний тонус. Рекомендується при програмах детоксу. Підходить для курсового застосування.", reviews:"Легкість і енергія ★★★★★"},
+  {id:22, cat:"detox", title:"Мікобен", img:"https://i.ibb.co/B2bwhQmb/PXL-20260225-181858231.jpg", price:475, stars:"★★★★★", rating:"4.9 (980)", specs:"Мікобен Фітокомплекс для підтримки балансу мікрофлори та очищення кишечника. Сприяє нормалізації травлення. Допомагає підтримувати комфорт у шлунково-кишковому тракті. Рекомендується при програмах відновлення організму. Підходить для комплексного застосування.", reviews:"Шлунок працює ідеально ★★★★★"},
+
+  // Допомога при застуді — 7
+  {id:23, cat:"cold", title:"Цетрарія Карпатська", img:"https://i.ibb.co/5h2DFB4h/PXL-20260225-183327127-2.jpg", price:330, stars:"★★★★★", rating:"4.9 (980)", specs:"Цетрарія Карпатська Натуральний засіб на основі ісландського моху. Сприяє пом’якшенню горла та зменшенню кашлю. Підтримує місцевий імунітет слизових оболонок. Рекомендується в сезон застуд. Підходить для дорослих та дітей.", reviews:"Природний антибіотик ★★★★★"},
+  {id:24, cat:"cold", title:"Ісландський мох", img:"https://i.postimg.cc/9Qcb3Xfp/Znimok-ekrana-2026-03-01-183524.png", price:170, stars:"★★★★★", rating:"4.8 (820)", specs:"Ісландський мох Рослинний засіб для підтримки дихальної системи. Сприяє зменшенню подразнення горла. Допомагає при сухому кашлі. Рекомендується при сезонних простудах. Підходить для курсового застосування.", reviews:"Кашель зник за 2 дні ★★★★★"},
+  {id:25, cat:"cold", title:"Сироп малина - шипшина", img:"https://i.postimg.cc/26whwmCm/Znimok-ekrana-2026-03-01-193232.png", price:320, stars:"★★★★★", rating:"4.9 (870)", specs:"Сироп Малина – шипшина Натуральний сироп з вітамінною підтримкою. Сприяє зміцненню імунітету. Має приємний смак і підходить для дітей. Рекомендується у період застуд. Підтримує загальний тонус організму.", reviews:"Дітям дуже подобається ★★★★★"},
+  {id:26, cat:"cold", title:"Сироп Цетрарія - солодка", img:"https://i.postimg.cc/C5xDrtKy/Znimok-ekrana-2026-03-01-193355.png", price:320, stars:"★★★★★", rating:"4.8 (690)", specs:"Сироп Цетрарія – солодка Комбінований сироп для підтримки дихальних шляхів. Сприяє пом’якшенню сухого кашлю. Підтримує комфорт у горлі. Рекомендується при застудних станах. Підходить для дорослих.", reviews:"Горло заспокоює миттєво ★★★★★"},
+  {id:27, cat:"cold", title:"Антивірин", img:"https://i.ibb.co/VYKSzvLC/PXL-20260225-181735420.jpg", price:345, stars:"★★★★★", rating:"4.9 (1340)", specs:"Антивірин Фітокомплекс для підтримки організму при вірусному навантаженні. Сприяє зміцненню імунітету. Допомагає швидше відновити сили. Рекомендується у період сезонних захворювань. Підходить для курсового застосування.", reviews:"Хвороба проходить швидко ★★★★★"},
+  {id:28, cat:"cold", title:"Імуностан-Antivirus", img:"https://i.ibb.co/hJMM6RzP/PXL-20260225-183231489.jpg", price:370, stars:"★★★★★", rating:"5.0 (1100)", specs:"Імуностан-Antivirus Комплекс для активної підтримки імунної системи. Сприяє підвищенню опірності організму. Рекомендується при частих застудах. Підтримує загальний тонус. Підходить для профілактичного прийому.", reviews:"Не хворію вже рік ★★★★★"},
+  {id:29, cat:"cold", title:"L-Лізин Pro", img:"https://i.postimg.cc/P5dyGfqY/Znimok-ekrana-2026-03-01-183201.png", price:345, stars:"★★★★★", rating:"4.9 (780)", specs:"L-Лізин Pro Амінокислота для підтримки імунної системи. Сприяє відновленню організму при вірусному навантаженні. Підтримує здоров’я шкіри та слизових. Рекомендується для курсового застосування. Підходить для дорослих.", reviews:"Герпес не повертається ★★★★★"},
+  {id:29, cat:"cold", title:"Апі-вітин фітосвічки", img:"https://i.postimg.cc/rsRxxHF1/Znimok-ekrana-2026-03-01-193846.png", price:290, stars:"★★★★★", rating:"4.9 (780)", specs:"Апі-вітин -Препарат сприяє загальному відновленню організму, особливо ефективний у післяопераційний період, при ослабленні після хвороб чи стресів. Він запобігає утворенню атеросклеротичних бляшок у судинах, покращує кровообіг, нормалізує обмін речовин та підтримує енергетичний баланс. Фітосвічки мають протизапальну, імуномодулюючу та регенеруючу дію, допомагають адаптуватися після важких станів. Рекомендуються як допоміжний засіб для посилення захисних сил організму та прискорення відновлення.", reviews:"★★★★★"},
+
+  // Боротьба з паразитами — 3
+  {id:30, cat:"antiparasite", title:"Гельмінтозин", img:"https://i.ibb.co/wrc30ycm/PXL-20260225-181006200.jpg", price:310, stars:"★★★★★", rating:"4.9 (920)", specs:"Гельмінтозин Рослинний комплекс для підтримки організму в період очищення від паразитарного навантаження. Містить натуральні компоненти, що створюють несприятливі умови для розвитку паразитів. Сприяє покращенню роботи шлунково-кишкового тракту та нормалізації травлення. Підтримує природні захисні механізми організму. Рекомендується для курсового застосування в рамках програм очищення.", reviews:"Очищення ефективне ★★★★★"},
+  {id:31, cat:"antiparasite", title:"Сироп Пижмо - часник", img:"https://i.postimg.cc/xTqS3zG5/Znimok-ekrana-2026-03-08-135537.png", price:320, stars:"★★★★★", rating:"4.8 (760)", specs:"Сироп Пижмо – часник Комбінований фітосироп на основі пижма та часнику. Сприяє створенню несприятливого середовища для паразитів у кишечнику. Підтримує травлення та допомагає зменшити дискомфорт у животі. Має природні очищувальні властивості. Підходить для курсового прийому.", reviews:"Смак приємний ★★★★★"},
+  {id:32, cat:"antiparasite", title:"Гельмінтин фітосвічки", img:"https://i.postimg.cc/LhdfTVnf/Znimok-ekrana-2026-03-01-194035.png", price:290, old:340, badge:"-17%", stars:"★★★★★", rating:"4.9 (890)", specs:"Гельмінтин фітосвічки Фітосвічки з рослинними екстрактами для місцевого застосування. Використовуються в комплексних програмах очищення організму. Сприяють підтримці нормальної мікрофлори та місцевого імунітету. Мають м’яку дію та натуральний склад. Рекомендуються для курсового застосування.", reviews:"Дуже зручно ★★★★★"},
+  {id:32, cat:"antiparasite", title:"Холевітин", img:"https://i.postimg.cc/g0T2P2mX/Znimok-ekrana-2026-03-01-194430.png", price:365, old:427, badge:"-17%", stars:"★★★★★", rating:"4.9 (890)", specs:"Холевітин — біологічно активна добавка від Рослина Карпат, що сприяє підтримці печінки, травлення та жовчовиділення. Засіб містить натуральні компоненти рослинного походження, які допомагають посилити природні процеси детоксикації, підтримати нормальну роботу шлунково-кишкового тракту та зменшити запальні реакції в організмі. Підходить для курсового застосування як частина комплексного оздоровлення організму. Рекомендований для дорослих при відчутті тяжкості у шлунку та перевтомі після їжі.", reviews:"★★★★★"},
+
+  // Ендокринна система — 2
+  {id:33, cat:"endo", title:"Ендокрин-М", img:"https://i.postimg.cc/G2rvG9w2/Znimok-ekrana-2026-03-01-191523.png", price:305, stars:"★★★★★", rating:"4.8 (820)", specs:"Ендокрин-М Фітокомплекс для підтримки функцій ендокринної системи. Сприяє нормалізації гормонального балансу та загального самопочуття. Підтримує роботу щитоподібної залози. Рекомендується при підвищених навантаженнях та стресі. Підходить для курсового застосування.", reviews:"Самопочуття покращилося ★★★★★"},
+  {id:34, cat:"endo", title:"Біо-йод organic", img:"https://i.postimg.cc/W1s8Rp4W/Znimok-ekrana-2026-03-01-183750.png", price:350, stars:"★★★★★", rating:"4.9 (720)", specs:"Біо-йод organic Натуральне джерело йоду для підтримки функцій щитоподібної залози. Сприяє нормальному обміну речовин і підтримці енергетичного балансу. Рекомендується при дефіциті йоду. Підтримує розумову активність та загальний тонус. Підходить для профілактичного прийому.", reviews:"Щитоподібна в нормі ★★★★★"},
+
+  // Здоров'я серця та судин — 4
+  {id:35, cat:"heart", title:"Вітакард", img:"https://i.postimg.cc/Sxmd0QK3/Znimok-ekrana-2026-03-01-184113.png", price:290, stars:"★★★★★", rating:"4.9 (1340)", specs:"Вітакард Комплекс для підтримки серцево-судинної системи. Сприяє нормалізації артеріального тиску та покращенню кровообігу. Підтримує еластичність судин. Рекомендується при підвищених навантаженнях. Підходить для курсового застосування.", reviews:"Тиск стабільний ★★★★★"},
+  {id:36, cat:"heart", title:"Глід", img:"https://i.postimg.cc/0yZf9gMR/Znimok-ekrana-2026-03-01-191239.png", price:140, stars:"★★★★★", rating:"4.8 (920)", specs:"Глід Натуральний засіб на основі екстракту глоду. Сприяє зміцненню серцевого м’яза та покращенню кровообігу. Підтримує нормальний ритм серця. Має м’яку заспокійливу дію. Підходить для регулярного прийому.", reviews:"Серце дякує ★★★★★"},
+  {id:37, cat:"heart", title:"Енергітон Anti-sleep", img:"https://i.postimg.cc/WbtPwkm7/Znimok-ekrana-2026-03-08-135650.png", price:325, stars:"★★★★★", rating:"4.9 (1100)", specs:"Енергітон Anti-sleep Комплекс для підтримки бадьорості та концентрації. Сприяє підвищенню енергії та зменшенню відчуття втоми. Підтримує активність протягом дня. Рекомендується при інтенсивному графіку роботи. Підходить для короткострокового застосування.", reviews:"Бадьорість цілий день ★★★★★"},
+  {id:38, cat:"heart", title:"Капісудин", img:"https://i.ibb.co/PzYzBRgB/PXL-20260225-182528868.jpg", price:355, stars:"★★★★★", rating:"4.9 (950)", specs:"Капісудин Фітокомплекс для підтримки здоров’я судин. Сприяє покращенню мікроциркуляції. Підтримує тонус судинних стінок. Рекомендується при відчутті важкості в ногах. Підходить для курсового прийому.", reviews:"Аналіз кращий ★★★★★"},
+
+  // Опорно-руховий апарат — 4
+  {id:39, cat:"joints", title:"Кальцимін", img:"https://i.postimg.cc/ZRZ6p0t8/Znimok-ekrana-2026-03-01-192100.png", price:415, stars:"★★★★★", rating:"4.8 (950)", specs:"Кальцимін Комплекс кальцію та мікроелементів для підтримки кісток і судин. Сприяє зміцненню кісткової тканини. Підтримує нормальне функціонування м’язів. Рекомендується при дефіциті кальцію. Підходить для профілактичного прийому.", reviews:"Кістки міцніші ★★★★★"},
+  {id:40, cat:"joints", title:"Антиревматин- М", img:"https://i.ibb.co/JWJ7dF6J/PXL-20260225-181050076.jpg", price:298, old:352, badge:"-18%", stars:"★★★★★", rating:"4.9 (870)", specs:"Антиревматин-М сприяє підтримці здоров’я суглобів та сполучної тканини. Допомагає зменшити запалення та дискомфорт при рухах. Підтримує гнучкість і рухливість суглобів. Рекомендований при вікових змінах та фізичних навантаженнях. Підходить для комплексної терапії.", reviews:"Суглоби не болять ★★★★★"},
+  {id:41, cat:"joints", title:"Пропаїн", img:"https://i.ibb.co/MDXhRPkM/PXL-20260225-181211046.jpg", price:425, stars:"★★★★★", rating:"4.8 (720)", specs:"Пропаїн — засіб на основі природних компонентів для підтримки імунної системи. Сприяє підвищенню захисних сил організму. Має протизапальні та загальнозміцнювальні властивості. Рекомендований у період сезонних застуд. Підходить для профілактичного застосування.", reviews:"Рухливість повернулася ★★★★★"},
+  {id:42, cat:"joints", title:"Хондроїтин - Pro", img:"https://i.ibb.co/zHnNH844/PXL-20260225-182133763.jpg", price:520, stars:"★★★★★", rating:"4.9 (1100)", specs:"Хондротин-Pro підтримує здоров’я суглобів і хрящової тканини. Сприяє збереженню рухливості та зменшенню дискомфорту. Допомагає при вікових змінах і підвищених фізичних навантаженнях. Підтримує природні процеси відновлення хряща. Підходить для тривалого прийому.", reviews:"Колiна як нові ★★★★★"},
+
+  // Міцні нерви — 4
+  {id:43, cat:"nervous", title:"Нервостабін", img:"https://i.ibb.co/JNw207L/PXL-20260225-181501983.jpg", price:305, stars:"★★★★★", rating:"4.9 (890)", specs:"Нервостабін Фітокомплекс для підтримки нервової системи. Сприяє зменшенню нервового напруження. Підтримує емоційний баланс. Рекомендується при стресі та перевтомі. Підходить для курсового застосування.", reviews:"Спокій і сон ★★★★★"},
+  {id:44, cat:"nervous", title:"Сироп Пустирник - меліса", img:"https://i.postimg.cc/630n0wBt/Znimok-ekrana-2026-03-01-193255.png", price:320, stars:"★★★★★", rating:"4.8 (760)", specs:"Сироп на основі пустирника та меліси допомагає знизити нервове напруження та покращити якість сну. Сприяє нормалізації емоційного стану та зменшенню дратівливості. Має м’яку заспокійливу дію без ефекту сонливості вдень. Рекомендований при стресах, перевтомі та підвищеній тривожності. Підходить для дорослих і підлітків.", reviews:"Тривога зникла ★★★★★"},
+  {id:45, cat:"nervous", title:"Магній-Р.К.", img:"https://i.ibb.co/zWpPHQ1T/PXL-20260225-182719044.jpg", price:405, stars:"★★★★★", rating:"4.9 (980)", specs:"Магній-Р.К. — джерело магнію для підтримки нервової системи та м’язової функції. Сприяє зменшенню втоми, судом і нервового напруження. Допомагає підтримувати нормальну роботу серця. Рекомендований при підвищених фізичних і розумових навантаженнях. Добре засвоюється та підходить для курсового прийому.", reviews:"Судоми пройшли ★★★★★"},
+  {id:46, cat:"nervous", title:"Грифон-Vege 5 - HTP", img:"https://i.postimg.cc/fbYxVmFL/Znimok-ekrana-2026-03-01-191325.png", price:495, stars:"★★★★★", rating:"4.9 (820)", specs:"Грифон-Vege 5-HTP — натуральне джерело 5-гідрокситриптофану для підтримки гарного настрою та сну. Сприяє виробленню серотоніну, допомагає зменшити тривожність і покращити емоційний стан. Рекомендований при стресах та порушеннях сну. Підтримує психологічний комфорт природним шляхом. Підходить для вегетаріанців.", reviews:"Настрій чудовий ★★★★★"},
+
+  // Відновлення мікрофлори — 2
+  {id:47, cat:"microflora", title:"Біфідолактин", img:"https://i.ibb.co/Qv663zNM/PXL-20260225-182426793.jpg", price:355, stars:"★★★★★", rating:"4.8 (670)", specs:"Пробіотичний комплекс для підтримки здорової мікрофлори кишківника. Сприяє покращенню травлення та засвоєнню поживних речовин. Допомагає відновити баланс бактерій після антибактеріальної терапії. Зміцнює природний імунітет організму. Підходить для дорослих та дітей (згідно з рекомендаціями).", reviews:"Кишечник в нормі ★★★★★"},
+  {id:48, cat:"microflora", title:"Біфідолактин-D", img:"https://i.ibb.co/dsZhsy5Q/PXL-20260225-182304449.jpg", price:360, stars:"★★★★★", rating:"4.9 (820)", specs:"Пробіотичний комплекс для підтримки здорової мікрофлори кишківника. Сприяє покращенню травлення та засвоєнню поживних речовин. Допомагає відновити баланс бактерій після антибактеріальної терапії. Зміцнює природний імунітет організму. Підходить для дорослих та дітей (згідно з рекомендаціями).", reviews:"Після антибіотиків супер ★★★★★"},
+
+  // Нормалізація травлення — 5
+  {id:49, cat:"digestion", title:"Гастрогіперин", img:"https://i.ibb.co/ZRHhhnTs/PXL-20260225-180655286.jpg", price:315, stars:"★★★★★", rating:"4.8 (690)", specs:"Гастрогіперин — рослинний засіб для підтримки здоров’я шлунка. Сприяє зменшенню запальних процесів та нормалізації кислотності. Допомагає при відчутті печії та дискомфорту. Підтримує слизову оболонку шлунка. Підходить для курсового застосування.", reviews:"Гастрит відступив ★★★★★"},
+  {id:50, cat:"digestion", title:"Ферментозин Р.К.", img:"https://i.postimg.cc/9z3TpBrd/Znimok-ekrana-2026-03-01-194305.png", price:690, stars:"★★★★★", rating:"4.9 (780)", specs:"Ферментозин Р.К. містить комплекс ферментів для покращення травлення. Сприяє кращому розщепленню їжі та зменшенню важкості після прийому їжі. Рекомендований при недостатності ферментів. Допомагає підтримувати комфорт травної системи. Підходить для дорослих.", reviews:"Травлення ідеальне ★★★★★"},
+  {id:51, cat:"digestion", title:"Травлесил", img:"https://i.ibb.co/p60KbLv2/PXL-20260225-180759201.jpg", price:290, stars:"★★★★☆", rating:"4.6 (670)", specs:"Травлесил — рослинний засіб для підтримки опорно-рухового апарату. Сприяє зменшенню запалення та дискомфорту в суглобах. Підтримує рухливість і гнучкість. Рекомендований при фізичних навантаженнях і вікових змінах. Підходить для комплексного застосування.", reviews:"Шлунок працює як годинник ★★★★☆"},
+  {id:52, cat:"digestion", title:"Чистоксин-МКЦ", img:"https://i.postimg.cc/s2NgRgsJ/Znimok-ekrana-2026-03-01-194619.png", price:320, stars:"★★★★★", rating:"4.9 (850)", specs:"Чистоксин-МКЦ сприяє природному очищенню організму. Допомагає виводити токсини та покращує роботу кишківника. Містить компоненти, що підтримують нормальний обмін речовин. Рекомендований при порушеннях харчування та для детокс-програм. Підходить для курсового прийому.", reviews:"Легкість після курсу ★★★★★"},
+  {id:53, cat:"digestion", title:"Сироп Фенхель - ромашка", img:"https://i.postimg.cc/Kj8LpV8V/Znimok-ekrana-2026-03-01-193335.png", price:320, stars:"★★★★★", rating:"4.8 (720)", specs:"Сироп на основі фенхелю та ромашки підтримує здоров’я травної системи. Допомагає зменшити здуття та спазми. Сприяє нормалізації роботи кишківника. Має м’яку заспокійливу дію на шлунково-кишковий тракт. Підходить для дітей і дорослих.", reviews:"Спазми зникли ★★★★★"},
+
+  // Відновлення печінки — 3
+  {id:54, cat:"liver", title:"Лецитин Р.К.", img:"https://i.ibb.co/KpmWHxBG/PXL-20260225-182346820.jpg", price:405, stars:"★★★★★", rating:"4.9 (1240)", specs:"Лецитин Р.К. Lecithin Джерело фосфоліпідів для підтримки функцій печінки. Сприяє відновленню клітинних мембран. Підтримує нормальний жировий обмін. Рекомендується при підвищених навантаженнях на печінку. Підходить для тривалого прийому.", reviews:"Печінка очищена ★★★★★"},
+  {id:55, cat:"liver", title:"Гепатовіт", img:"https://i.ibb.co/8L2pNrTH/PXL-20260225-180922396.jpg", price:320, old:420, badge:"ХІТ", stars:"★★★★★", rating:"4.9 (1450)", specs:"Гепатовіт Фітокомплекс для підтримки здоров’я печінки. Сприяє детоксикаційним процесам організму. Підтримує нормальну роботу жовчовивідної системи. Рекомендується при програмах очищення. Підходить для курсового застосування.", reviews:"Аналіз покращився ★★★★★"},
+  {id:56, cat:"liver", title:"Сироп Артишок - м'ята", img:"https://i.postimg.cc/JnqZqmR8/Znimok-ekrana-2026-03-01-193210.png", price:320, stars:"★★★★★", rating:"4.8 (760)", specs:"Сироп Артишок – м'ята Рослинний сироп для підтримки печінки та травлення. Сприяє відтоку жовчі та покращенню апетиту. Допомагає зменшити важкість після їжі. Має приємний смак. Підходить для курсового прийому.", reviews:"Жовч тече добре ★★★★★"},
+  {id:56, cat:"liver", title:"L-таурин Pro", img:"https://i.postimg.cc/nhn28VL7/Znimok-ekrana-2026-03-01-183237.png", price:340, stars:"★★★★★", rating:"4.8 (760)", specs:"L-Таурин PRO — це амінокислота таурин у формі біодобавки, створена для підтримки функціонального стану організму. Препарат сприяє нормалізації роботи серцево-судинної системи, підтримує м’язову діяльність, бере участь у метаболічних процесах та допомагає зберегти енергетичний баланс. L-Таурин PRO особливо корисний людям, що ведуть активний спосіб життя, займаються спортом, або кому потрібна підтримка під час фізичних та розумових навантажень.", reviews:"★★★★★"},
+
+  // Відновлення зору — 2
+  {id:57, cat:"eyes", title:"НЕДОСТУПНО", img:"", price:000000000, stars:"★★★★★", rating:"4.8 (820)", specs:"• Для зору", reviews:"Очі менше втомлюються ★★★★★"},
+  {id:58, cat:"eyes", title:"Офтальмосан Lecithin", img:"https://i.ibb.co/LzcVRfHb/PXL-20260225-182105492.jpg", price:405, stars:"★★★★★", rating:"4.9 (950)", specs:"• Лецитин + чорниця<br>Сироп Артишок – м'ята Рослинний сироп для підтримки печінки та травлення. Сприяє відтоку жовчі та покращенню апетиту. Допомагає зменшити важкість після їжі. Має приємний смак. Підходить для курсового прийому.", reviews:"Зір покращився ★★★★★"},
+
+  // Підшлункова залоза — 1
+  {id:59, cat:"pancreas", title:"Інулін з селеном", img:"https://i.ibb.co/G3PXz7Hz/PXL-20260225-181557220.jpg", price:305, stars:"★★★★★", rating:"4.9 (1340)", specs:"Інулін з селеном Комплекс для підтримки обміну речовин та роботи підшлункової залози. Сприяє нормалізації рівня глюкози. Підтримує мікрофлору кишечника. Має антиоксидантні властивості. Підходить для курсового застосування.", reviews:"Цукор стабільний ★★★★★"},
+  {id:59, cat:"pancreas", title:"Берберин Р.К.", img:"https://i.postimg.cc/G2Th3nm7/Znimok-ekrana-2026-03-01-195300.png", price:1700, stars:"★★★★★", rating:"4.9 (1340)", specs:"Берберин від Рослина Карпат — це натуральний засіб, що сприяє нормалізації обміну речовин та підтримці здоров’я травної та серцево-судинної систем. Діє як природний метаболічний стимулятор: допомагає підтримувати нормальний рівень глюкози в крові, сприяє контролю ліпідів, підтримує процеси травлення та допомагає зменшити дискомфорт у шлунково-кишковому тракті. Комплекс також позитивно впливає на функцію печінки та загальний метаболізм.", reviews:"Цукор стабільний ★★★★★"},
+
+  // Фіточаї — 4
+  {id:60, cat:"tea", title:"Гастроентерологічний збір", img:"https://i.postimg.cc/Vk4RzySK/Znimok-ekrana-2026-03-01-184332.png", price:140, stars:"★★★★★", rating:"4.8 (720)", specs:"Трав’яний збір для підтримки здоров’я шлунка та кишківника. Сприяє зменшенню запалення та нормалізації травлення. Допомагає при дискомфорті, здутті та печії. Має м’яку комплексну дію. Підходить для курсового застосування.", reviews:"Травлення нормалізувалося ★★★★★"},
+  {id:61, cat:"tea", title:"Заспокійливий збір чай", img:"https://i.postimg.cc/j5KyPC0P/Znimok-ekrana-2026-03-01-191937.png", price:140, stars:"★★★★★", rating:"4.9 (890)", specs:"Трав’яний заспокійливий чай сприяє гармонізації нервової системи. Допомагає зменшити стрес, покращує сон та загальне самопочуття. Має приємний природний аромат і м’яку дію. Рекомендований при емоційному навантаженні та перевтомі. Підходить для щоденного вживання.", reviews:"Спокійний вечір ★★★★★"},
+  {id:62, cat:"tea", title:"Урологічний збір", img:"https://i.postimg.cc/NF2mmnfH/Znimok-ekrana-2026-03-01-193737.png", price:140, stars:"★★★★★", rating:"4.8 (760)", specs:"Урологічний збір — це поєднання лікарських трав для підтримки здоров’я нирок та сечового міхура. Сприяє зменшенню запалення, має легку сечогінну дію та допомагає очищенню організму. Рекомендований при частих запальних процесах сечовидільної системи. Підтримує природні захисні функції організму. Підходить для курсового застосування.", reviews:"Нирки дякують ★★★★★"},
+  
+
+  // Проти грибків та бактерій — 2
+  {id:64, cat:"antifungus", title:"Дермісан", img:"https://i.ibb.co/4RXtQ7fW/PXL-20260225-181525329.jpg", price:330, stars:"★★★★★", rating:"4.9 (870)", specs:"Дермісан — засіб для підтримки здоров’я шкіри. Сприяє зменшенню запальних процесів і покращує стан шкірного покриву. Підтримує природні процеси регенерації. Рекомендований при проблемній та чутливій шкірі. Підходить для комплексного догляду.", reviews:"Грибки зникли ★★★★★"},
+  {id:65, cat:"antifungus", title:"Фунгіцин", img:"https://i.ibb.co/BHhFkskB/PXL-20260225-181121956.jpg", price:380, stars:"★★★★★", rating:"4.8 (650)", specs:"Фунгіцин — рослинний комплекс для підтримки організму при грибкових ураженнях. Сприяє зменшенню дискомфорту, свербежу та запальних проявів. Має природні протимікробні властивості та допомагає зміцнити місцевий імунітет. Підтримує здоровий стан шкіри та слизових оболонок. Рекомендований як допоміжний засіб у комплексному підході до боротьби з грибковими інфекціями.", reviews:"Швидкий ефект ★★★★★"},
+
+  // Сечовивідна система — 3
+  {id:66, cat:"urinary", title:"Діуретрин", img:"https://i.postimg.cc/FK0jY3q1/Znimok-ekrana-2026-03-01-191350.png", price:290, stars:"★★★★★", rating:"4.9 (890)", specs:"Діуретрин — натуральний рослинний засіб для підтримки здоров’я сечовидільної системи. Сприяє м’якому виведенню зайвої рідини з організму, допомагає зменшити набряки та підтримати роботу нирок. Рекомендується при схильності до затримки рідини та для профілактики запальних процесів сечовивідних шляхів. Має делікатну дію без різкого навантаження на організм. Підходить для регулярного використання за рекомендацією спеціаліста.", reviews:"Набряки зникли ★★★★★"},
+  {id:67, cat:"urinary", title:"Уроловіт", img:"https://i.postimg.cc/tJnWWcCn/Znimok-ekrana-2026-03-01-193716.png", price:290, stars:"★★★★★", rating:"4.8 (720)", specs:"Уроловіт — комплексний рослинний препарат для підтримки здоров’я нирок і сечового міхура. Допомагає зменшити запальні процеси та сприяє природному очищенню сечовидільної системи. Рекомендований при дискомфорті під час сечовипускання та для профілактики утворення каменів. Має м’яку сечогінну та протизапальну дію. Підходить як допоміжний засіб у комплексній терапії.", reviews:"Без болю ★★★★★"},
+  {id:68, cat:"urinary", title:"Уростан", img:"https://i.postimg.cc/90wZZkFR/Znimok-ekrana-2026-03-01-193757.png", price:325, stars:"★★★★★", rating:"4.9 (760)", specs:"Уростан створений для підтримки функціонування сечостатевої системи. Сприяє зменшенню запалення та підтримує нормальний відтік сечі. Може застосовуватись при хронічних та гострих станах у складі комплексної програми оздоровлення. Натуральний склад забезпечує м’яку та безпечну дію. Допомагає підтримувати комфорт і здоров’я щодня.", reviews:"Ефект помітний ★★★★★"},
+
+  // Доглядові засоби — 18
+  {id:100, cat:"care", title:"Тонізуючий гель для вмивання", img:"https://i.postimg.cc/T13mNSPv/Znimok-ekrana-2026-03-01-193524.png", price:340, stars:"★★★★★", rating:"4.8 (800+)", specs:"Тонізуючий гель SYNEVIRIA від «Рослина Карпат» — засіб для вмивання з морським колагеном для очищення та тонізації. Він звужує пори, освіжає, знімає втому. Підходить для комбінованої шкіри. Класифікація — натуральна. Наносити вранці та ввечері.", reviews:"Шкіра сяє ★★★★★"},
+  {id:101, cat:"care", title:"Тонік - есенція для очищення шкіри обличчя", img:"https://i.postimg.cc/j2SN39jT/Znimok-ekrana-2026-03-01-193554.png", price:330, stars:"★★★★★", rating:"4.8 (800+)", specs:"Тонік-есенція SYNEVIRIA від «Рослина Карпат» — засіб для зволоження та тонізації шкіри. Він відновлює pH, знімає подразнення, посилює дію крему. Натуральні екстракти заспокоюють. Підходить для всіх типів шкіри. Наносити після очищення.", reviews:"Ідеально для ранку ★★★★★"},
+  {id:102, cat:"care", title:"Активна сироватка - бустер, навколо очей", img:"https://i.postimg.cc/jSRcVqjh/Znimok-ekrana-2026-03-01-183602.png", price:591, stars:"★★★★★", rating:"4.9 (800+)", specs:"Активна сироватка-бустер SYNEVIRIA від «Рослина Карпат» — концентрат для омолодження шкіри. Вона проникає глибоко, зменшує зморшки, підвищує пружність. Пептиди та гіалурон дають ефект сяйва. Використовувати перед кремом. Наносити 3–5 крапель вранці та ввечері.", reviews:"Шкіра молодша ★★★★★"},
+  {id:103, cat:"care", title:"Денний крем - ліфтинг для шкіри обличчя", img:"https://i.postimg.cc/wBDh1LP7/Znimok-ekrana-2026-03-01-191425.png", price:602, stars:"★★★★★", rating:"4.9 (800+)", specs:"Денний крем-ліфтинг SYNEVIRIA від компанії «Рослина Карпат» — це інноваційний засіб для щоденного догляду за шкірою обличчя з антивіковим ефектом. Він активує природний процес вироблення колагену та еластину, зміцнює міжклітинний матрикс та забезпечує ефективне розгладження зморшок. Крем підвищує тургор шкіри, робить її більш пружною та сяючою, захищаючи від зовнішніх факторів, таких як УФ-випромінювання та забруднення. У складі — нано-пептиди Matrixyl 3000, Easyliance, Kalpariane та гіалуронова кислота, які працюють на клітинному рівні. Рекомендується наносити вранці після очищення та тонізування для видимого омолодження.", reviews:"Обличчя підтягнуте ★★★★★"},
+  {id:104, cat:"care", title:"Нічний крем - ліфтинг дляшкіри обличчя", img:"https://i.postimg.cc/Qtb1bshn/Znimok-ekrana-2026-03-01-192900.png", price:628, stars:"★★★★★", rating:"4.9 (800+)", specs:"Нічний крем-ліфтинг SYNEVIRIA від «Рослина Карпат» — потужний відновлювальний засіб для омолодження шкіри під час сну. Він стимулює регенерацію клітин, розгладжує зморшки, підвищує еластичність та повертає шкірі сяйво завдяки нано-пептидам Matrixyl 3000, Easyliance, Kalpariane та гіалуроновій кислоті. Крем глибоко живить епідерміс, заспокоює подразнення та захищає від оксидативного стресу. Вранці шкіра виглядає відпочившою та підтягнутою. Рекомендується наносити ввечері щільним шаром для максимального ефекту.", reviews:"Шкіра відновлена ★★★★★"},
+  {id:105, cat:"care", title:"Пептидно-гіалуронова anti-age маска", img:"https://i.postimg.cc/LXTLTR2w/Znimok-ekrana-2026-03-01-193047.png", price:145, stars:"★★★★★", rating:"4.8 (800+)", specs:"Пептидно-гіалуронова anti-age маска SYNEVIRIA від «Рослина Карпат» — інтенсивний засіб для боротьби зі зморшками та втратою пружності. Пептиди стимулюють синтез колагену, гіалуронова кислота забезпечує глибоке зволоження, а натуральні екстракти захищають від старіння. Маска розгладжує мімічні зморшки, підтягує овал обличчя та повертає сяйво. Підходить для шкіри 35+, ефект накопичується при використанні 2–3 рази на тиждень. Наносити на очищену шкіру на 20 хвилин, змивати або втирати залишки.", reviews:"Шкіра не суха ★★★★★"},
+  {id:106, cat:"care", title:"Гідро - активна зволожуюча маска для обличчя", img:"https://i.postimg.cc/zGq7mDfs/Znimok-ekrana-2026-03-01-184235.png", price:145, stars:"★★★★★", rating:"4.9 (800+)", specs:"Гідро-активна зволожуюча маска SYNEVIRIA від «Рослина Карпат» — експрес-засіб для інтенсивного зволоження шкіри обличчя. Вона насичує клітини вологою, усуває сухість, стягнутість та лущення завдяки гіалуроновій кислоті, алое вера та натуральним екстрактам. Маска відновлює гідроліпідний бар'єр, заспокоює подразнення та надає шкірі ефект сяйва. Ідеальна як SOS-засіб після сонця чи холоду, або для щотижневого догляду. Наносити товстим шаром на 15–20 хвилин, змивати теплою водою.", reviews:"Шкіра як після спа ★★★★★"},
+  {id:107, cat:"care", title:"НЕДОСТУПНО", img:"", price:0000000, stars:"★★★★★", rating:"4.9 (800+)", specs:"• Антивіковий ефект", reviews:"Зморшки менші ★★★★★"},
+  {id:108, cat:"care", title:"НЕДОСТУПНО", img:"", price:00000, stars:"★★★★★", rating:"4.8 (800+)", specs:"• Анти-ейдж", reviews:"Шкіра молодша ★★★★★"},
+  {id:109, cat:"care", title:"БІО - КОМПЛЕКС олій для рук та обличчя", img:"https://i.postimg.cc/8zT48kCZ/Znimok-ekrana-2026-03-01-183702.png", price:435, stars:"★★★★★", rating:"4.9 (800+)", specs:"БІО-КОМПЛЕКС олій SYNEVIRIA від «Рослина Карпат» — натуральна суміш органічних олій для зволоження та живлення сухої шкіри рук та обличчя. Він глибоко зволожує, пом'якшує шкіру, усуває лущення та захищає від сухості завдяки оліям авокадо, виноградних кісточок та іншим натуральним компонентам. Комплекс відновлює бар'єр шкіри, покращує еластичність та надає бархатистості. Ідеальний як нічний догляд або добавка до крему. Наносити кілька крапель на вологу шкіру для кращого вбирання.", reviews:"Шкіра бархатиста ★★★★★"},
+  {id:110, cat:"care", title:"Крем-флюїд для рук", img:"https://i.postimg.cc/XJ39dXSx/Znimok-ekrana-2026-03-01-192412.png", price:338, stars:"★★★★★", rating:"4.8 (800+)", specs:"Крем-флюїд для рук SYNEVIRIA від «Рослина Карпат» — легкий засіб для щоденного зволоження та захисту шкіри рук. Він швидко вбирається, пом'якшує грубу шкіру, усуває сухість, тріщини та подразнення. Натуральні олії та екстракти живлять кутикулу, зміцнюють нігті та повертають м'якість. Підходить для частого використання без липкості. Наносити за потребою протягом дня.", reviews:"Руки м'які ★★★★★"},
+  {id:111, cat:"care", title:"Твердий шампунь", img:"https://i.postimg.cc/7hZ7tcL8/Znimok-ekrana-2026-03-01-193503.png", price:478, stars:"★★★★★", rating:"4.9 (800+)", specs:"Твердий шампунь SYNEVIRIA від «Рослина Карпат» — екологічний засіб для глибокого очищення та відновлення всіх типів волосся. Він делікатно очищає, живить корені, зменшує випадіння та додає блиску без сульфатів та парабенів. Натуральні олії та протеїни роблять волосся сильним та здоровим. Економний, довго зберігається без пластику. Намочити брусок, намилити волосся, змити.", reviews:"Волосся блищить ★★★★★"},
+  {id:112, cat:"care", title:"Живильна маска для волосся", img:"https://i.postimg.cc/B6s2Ht9X/Znimok-ekrana-2026-03-01-191627.png", price:500, stars:"★★★★★", rating:"4.9 (800+)", specs:"Живильна маска для волосся SYNEVIRIA від «Рослина Карпат» — засіб для відновлення сухого та пошкодженого волосся. Вона глибоко живить, заповнює пористість, розгладжує кутикулу та повертає силу. Натуральні олії та екстракти зміцнюють корені та запобігають січенню. Використовувати 1–2 рази на тиждень. Наносити після миття на 15–30 хвилин, змити.", reviews:"Волосся сильне ★★★★★"},
+  {id:113, cat:"care", title:"Шампунь - есенція", img:"https://i.postimg.cc/DzMwKwnr/Znimok-ekrana-2026-03-01-194642.png", price:377, stars:"★★★★★", rating:"4.8 (800+)", specs:"Шампунь-есенція SYNEVIRIA від «Рослина Карпат» — багатофункціональний засіб для очищення та живлення волосся. Він очищає, насичує корені, покращує ріст та зменшує ламкість завдяки натуральним екстрактам. Підходить для щоденного використання, не обтяжує. Надає об'єм та блиск. Наносити на вологе волосся, помасажувати, змити.", reviews:"Волосся здорове ★★★★★"},
+  {id:114, cat:"care", title:"Інтенсивний бальзам для зміцнення волосяних фолікул", img:"https://i.postimg.cc/Z5JHkYqF/Znimok-ekrana-2026-03-01-183454.png", price:399, stars:"★★★★★", rating:"4.9 (800+)", specs:"Інтенсивний бальзам SYNEVIRIA від «Рослина Карпат» — засіб для захисту кінчиків волосся від січення. Він запечатує пошкодження, усуває ламкість, захищає від термо-впливу та повертає м'якість. Натуральні олії живлять без обтяження. Ідеальний для пофарбованого волосся. Наносити на вологі кінчики, не змивати.", reviews:"Кінчики не січуться ★★★★★"},
+  {id:115, cat:"care", title:"Біо-дезодорант для тіла", img:"https://i.postimg.cc/g2Gs9c0M/Znimok-ekrana-2026-03-01-183728.png", price:375, stars:"★★★★★", rating:"4.8 (800+)", specs:"Біо-дезодорант для тіла SYNEVIRIA від «Рослина Карпат» — натуральний засіб без алюмінію для захисту від запаху. Він нейтралізує бактерії, зволожує шкіру та заспокоює подразнення натуральними антисептиками. Підходить для чутливої шкіри, не залишає слідів. Екологічний для щоденного використання. Наносити на чисту шкіру.", reviews:"Запаху немає весь день ★★★★★"},
+  {id:116, cat:"care", title:"Міцелярний гель для інтимної гігієни", img:"https://i.postimg.cc/j5XPXKtH/Znimok-ekrana-2026-03-01-192745.png", price:340, stars:"★★★★★", rating:"4.9 (800+)", specs:"Міцелярний гель SYNEVIRIA від «Рослина Карпат» — делікатний засіб для очищення обличчя та інтимної гігієни. Він видаляє макіяж, забруднення та себум без подразнення, зберігаючи pH. Рослинні екстракти зволожують та заспокоюють. Підходить для щоденного використання. Наносити на вологу шкіру, змити.", reviews:"Шкіра чиста ★★★★★"},
+  {id:117, cat:"care", title:"Гель для душу", img:"https://i.postimg.cc/8zwHT8Fy/Znimok-ekrana-2026-03-01-191019.png", price:352, stars:"★★★★★", rating:"4.8 (800+)", specs:"Гель для душу SYNEVIRIA від «Рослина Карпат» — інноваційний засіб з інкапсульованими оліями жожоба, аргани та морським колагеном для делікатного очищення. Він зволожує, живить шкіру, зберігає бар'єр та надає шовковистості. Без сульфатів, з натуральними компонентами. Підходить для щоденного використання. Наносити на вологу шкіру, змити.", reviews:"Шкіра м'яка ★★★★★"},
+  {id:118, cat:"care", title:"Зубна гель-паста ВІДБІЛЮЮЧА", img:"https://i.postimg.cc/qR02ygV8/Znimok-ekrana-2026-03-01-192024.png", price:180, stars:"★★★★★", rating:"4.9 (800+)", specs:"Зубна гель-паста METTE SMILE від «Рослина Карпат» — відбілюючий засіб з іонами срібла для чутливих зубів та ясен. Вона знімає подразнення, зменшує запалення ясен, пригнічує патогенні бактерії та запобігає карієсу. Зміцнює стінки судин ясен, має протизапальну дію та зменшує больову чутливість. Безпечна формула без фтору. Чистити зуби 2 рази на день.", reviews:"Зуби біліші ★★★★★"},
+  {id:119, cat:"care", title:"Зубна паста ДЛЯ ЧУТЛИВИХ ЗУБІВ", img:"https://i.postimg.cc/wvHDL38D/Znimok-ekrana-2026-03-01-192002.png", price:180, stars:"★★★★★", rating:"4.8 (800+)", specs:"Зубна паста METTE SMILE від «Рослина Карпат» — натуральний засіб для чутливих зубів та ясен з підвищеною профілактикою карієсу. Вона заспокоює подразнення, запобігає карієсу, має протизапальну дію та зменшує больову чутливість. Знімає запалення ясен, сприяє загоєнню та освіжає подих. Зміцнює стінки судин ясен. Чистити 2 рази на день по 2 хвилини.", reviews:"Посмішка голлівудська ★★★★★"},
+
+  // Засоби для дому — 7
+  {id:200, cat:"home", title:"Для миття посуду", img:"https://i.postimg.cc/Pq1mCYcq/Znimok-ekrana-2026-03-01-191452.png", price:230, stars:"★★★★☆", rating:"4.7 (600+)", specs:"Еко-засіб для миття посуду від «Рослина Карпат» — натуральний гель на основі кокосової олії без фосфатів та нафтопродуктів. Він ефективно видаляє жир, стійкі запахи та забруднення, залишаючи посуд блискучим. Безпечний для шкіри рук, екологічний для септиків. Має знижене піноутворення. Дозувати 1–2 мл на губку.", reviews:"Посуд блищить ★★★★☆"},
+  {id:201, cat:"home", title:"Для ванної кімнати", img:"https://i.postimg.cc/26mnh3R1/Znimok-ekrana-2026-03-01-191655.png", price:245, stars:"★★★★☆", rating:"4.7 (600+)", specs:"Еко-засіб для ванної кімнати від «Рослина Карпат» — натуральний спрей проти нальоту, вапняку, мильних розводів та плісняви. Він швидко розчиняє забруднення, дезінфікує поверхні без хлору. Безпечний для акрилу, плитки, хрому. Має натуральний аромат. Розпилити, зачекати 2–5 хвилин, змити.", reviews:"Ванна чиста ★★★★☆"},
+  {id:202, cat:"home", title:"Для видалення жиру та нагару", img:"https://i.postimg.cc/3R72mW5D/Znimok-ekrana-2026-03-01-191723.png", price:290, stars:"★★★★☆", rating:"4.7 (600+)", specs:"Еко-засіб для видалення жиру та нагару від «Рослина Карпат» — потужний гель для кухонних поверхонь, плит та духовок. Він розщеплює стійкий жир без шкідливих випарів. Безпечний для харчових поверхонь після змивання. Ефективний у холодній воді. Наносити на забруднення, зачекати 5–10 хвилин, змити.", reviews:"Плита як нова ★★★★☆"},
+  {id:203, cat:"home", title:"Для миття підлоги", img:"https://i.postimg.cc/gJd38rFZ/Znimok-ekrana-2026-03-01-191752.png", price:320, stars:"★★★★☆", rating:"4.7 (600+)", specs:"Еко-засіб для миття підлоги від «Рослина Карпат» — концентрат без розводів для очищення ламінату, плитки, лінолеуму. Він видаляє бруд, жир, пил без липкості. Безпечний для дітей та тварин. Екологічний. Дозувати 20–30 мл на 5 л води.", reviews:"Підлога сяє ★★★★☆"},
+  {id:204, cat:"home", title:"Для миття унітазу", img:"https://i.postimg.cc/JnmjZtVX/Znimok-ekrana-2026-03-01-191822.png", price:310, stars:"★★★★☆", rating:"4.7 (600+)", specs:"Еко-засіб для миття унітазу від «Рослина Карпат» — густий гель з антибактеріальною дією проти нальоту та запахів. Він очищає, дезінфікує, поглинає запахи з хвойним ароматом без хлору. Безпечний для септиків. Наносити під обід, зачекати 10–15 хвилин, змити.", reviews:"Унітаз чистий ★★★★☆"},
+  {id:205, cat:"home", title:"Гель для прання WHITE", img:"https://i.postimg.cc/8zwHT8F9/Znimok-ekrana-2026-03-01-191144.png", price:375, stars:"★★★★☆", rating:"4.7 (600+)", specs:"Еко-гель для прання WHITE від «Рослина Карпат» — концентрований засіб для білих речей з ензимами без фосфатів. Він видаляє плями, відновлює білизну, зберігає тканину м'якою. Підходить для дитячого одягу. Дозувати 50–100 мл. Прати при 30–60 °C.", reviews:"Біле — біліше ★★★★☆"},
+  {id:206, cat:"home", title:"Гель для прання COLOR", img:"https://i.postimg.cc/YC83tc4n/Znimok-ekrana-2026-03-01-191053.png", price:375, stars:"★★★★☆", rating:"4.7 (600+)", specs:"Еко-гель для прання COLOR від «Рослина Карпат» — засіб для кольорових речей, що захищає колір від вицвітання. Він очищає, видаляє плями, зберігає яскравість та м'якість. Без фосфатів, безпечний для септиків. Дозувати 50–100 мл. Прати при 30–40 °C.", reviews:"Кольори не линяють ★★★★☆"},
+
+  // Лікувальні комплекси — 20
+  {id:300, cat:"complex", title:"Комплексна очистка організму Рослина Карпат - препарати Лімфорен, Гельмінтозин, Фунгіцин, Мікобен, Гепатовіт - (курс 30 днів)", img:"https://i.postimg.cc/mDGTYLfV/Znimok-ekrana-2026-03-02-210404.png", price:3175, stars:"★★★★★", rating:"4.9 (920)", specs:"<p>Лімфорен – 2 упаковки (очищення лімфи)<br>Гепатовіт – 2 упаковки (підтримка печінки)<br>Фунгіцин – 2 упаковки (проти грибків)<br>Гельмінтозин – 2 упаковки (від паразитів)<br>Мікобен – 1 упаковка (детокс організму)</p><h3>1. Комплексна очистка організму</h3><h4>Опис програми</h4><p>Комплексна очистка організму — це багаторівнева програма глибокого відновлення внутрішнього середовища організму через поетапне очищення лімфатичної системи, печінки, кишківника та антипаразитарну підтримку. Вона розроблена для людей, які відчувають хронічну втому, зниження імунітету, алергічні реакції, висипання на шкірі або мають проблеми з травленням. Програма допомагає зменшити токсичне навантаження, яке накопичується через стрес, неправильне харчування, медикаменти та екологічні фактори. Важливою частиною є підтримка лімфатичної системи, оскільки саме вона відповідає за виведення продуктів розпаду і токсинів. Комплекс діє м’яко, але системно, не створюючи різкого навантаження на органи детоксикації. Він поєднує протигрибкову, протипаразитарну та гепатопротекторну дію, що дозволяє працювати з причинами хронічних запальних процесів. Після проходження курсу часто покращується стан шкіри, зменшується набряковість, нормалізується стілець та підвищується рівень енергії. Також зменшуються прояви харчових непереносимостей та сезонних алергій. Програму рекомендовано проходити курсом 15–30 днів залежно від стану організму.</p><h4>Лімфорен</h4><p>Лімфорен активує та очищує лімфатичну систему, покращуючи відтік лімфи та зменшуючи набряки. Він сприяє виведенню токсинів та знижує навантаження на печінку і нирки. Препарат позитивно впливає на стан шкіри, допомагаючи зменшити запальні процеси та висипання.</p><h4>Фунгіцин</h4><p>Фунгіцин має виражену протигрибкову дію та допомагає контролювати надмірний ріст грибкової флори. Він підтримує баланс мікрофлори та зміцнює імунну відповідь організму. Особливо корисний при схильності до кандидозу та хронічних грибкових інфекцій.</p><h4>Гепатовіт</h4><p>Гепатовіт підтримує функцію печінки під час детоксикації та сприяє відновленню її клітин. Він покращує жовчовиділення і нормалізує процеси травлення. Допомагає організму ефективніше нейтралізувати токсини та продукти обміну.</p><h4>Гельмінтозин</h4><p>Гельмінтозин забезпечує протипаразитарну підтримку та створює несприятливі умови для життєдіяльності паразитів. Він сприяє виведенню продуктів їх розпаду та зменшує інтоксикаційні прояви. Підсилює загальний ефект очищення організму.</p><h4>Мікобен</h4><p>Мікобен доповнює протигрибкову дію комплексу та підтримує здорову мікрофлору кишківника. Він допомагає зменшити здуття та нормалізувати травлення. Посилює комплексний ефект детоксикації.</p>", reviews:"★★★★★"},
+  {id:301, cat:"complex", title:"Програма схуднення і обміну речовин (метаболізм) - Ідеал body, Чистоксин, Мангій, Лімфорен, Гепатовіт Рослина Карпат - комплекс при вазі та цилюліті", img:"https://i.postimg.cc/FRQhyr5D/Znimok-ekrana-2026-03-02-210615.png", price:2765, stars:"★★★★★", rating:"5.0 (1450)", specs:"<p>Ідеал Body – 2 упаковки (контроль ваги)<br>Лімфорен – 1 упаковка (очищення лімфи)<br>Чистоксин МКЦ – 2 упаковки (детокс організму)<br>Гепатовіт – 2 упаковки (підтримка печінки)<br>Магній – 1 упаковка (нервова система)</p><h3>2. Програма схуднення і обміну речовин</h3><h4>Опис програми</h4><p>Програма схуднення і нормалізації обміну речовин спрямована на м’яке зниження маси тіла без стресу для організму. Вона допомагає активізувати природні процеси метаболізму та покращити засвоєння поживних речовин. Комплекс сприяє зменшенню жирових відкладень та набряковості. Програма підтримує роботу печінки та кишечника, що є ключовими органами у процесі зниження ваги. Вона допомагає зменшити тягу до солодкого та переїдання. Комплекс сприяє очищенню організму від продуктів розпаду жирової тканини. Регулярне застосування допомагає покращити тонус тіла та стан шкіри. Програма підтримує енергетичний баланс і зменшує втому під час дієтичних змін. Вона підходить при уповільненому метаболізмі та схильності до набору ваги. Тривалість курсу визначається індивідуально залежно від поставленої мети.</p><h4>Ідеал Body</h4><p>Ідеал Body сприяє активізації обміну речовин. Він допомагає контролювати апетит. Підтримує процеси спалювання жиру.</p><h4>Магній</h4><p>Магній підтримує нервову систему під час зміни харчування. Він зменшує рівень стресу. Сприяє нормалізації енергетичного обміну.</p><h4>Лімфорен</h4><p>Лімфорен сприяє виведенню надлишкової рідини та токсинів. Він зменшує набряки. Підсилює ефект очищення організму.</p><h4>Чистоксин</h4><p>Чистоксин підтримує процеси детоксикації. Він сприяє очищенню кишечника. Допомагає нормалізувати травлення.</p><h4>МКЦ</h4><p>МКЦ створює відчуття ситості. Вона допомагає контролювати калорійність раціону. Сприяє м’якому очищенню кишечника.</p><h4>Гепатовіт</h4><p>Гепатовіт підтримує функцію печінки під час зниження ваги. Він покращує жовчовиділення. Сприяє кращому перетравленню жирів.</p>", reviews:"★★★★★"},
+  {id:302, cat:"complex", title:"Нормалізація обміну речовин і схуднення - 2 КУРС лікування Рослина Карпат", img:"https://i.postimg.cc/kGBM4VF0/Znimok-ekrana-2026-03-02-210812.png", price:3305, old:3735, badge:"-13%", stars:"★★★★★", rating:"4.9 (1180)", specs:"<p>Ідеал Body – 2 упаковки (контроль ваги)<br>Мікобен – 1 упаковка (детокс організму)<br>Травлесел – 2 упаковки (селен, імунітет)<br>Спіруліна – 2 упаковки (енергія організму)</p><h3>3. Нормалізація обміну речовин і схуднення — 2 курс</h3><h4>Опис програми</h4><p>Другий курс програми нормалізації обміну речовин спрямований на закріплення результатів першого етапу схуднення. Він допомагає стабілізувати вагу та запобігти поверненню зайвих кілограмів. Комплекс підтримує метаболічні процеси на активному рівні. Програма сприяє подальшому зменшенню жирової маси при необхідності. Вона допомагає організму адаптуватися до нового режиму харчування. Комплекс підтримує роботу печінки та кишечника. Регулярне застосування сприяє покращенню загального самопочуття. Програма допомагає зменшити ризик метаболічних порушень. Вона підтримує гормональний баланс, що впливає на вагу. Тривалість курсу визначається індивідуально відповідно до динаміки результатів.</p><h4>Ідеал Body</h4><p>Ідеал Body підтримує активний метаболізм. Він сприяє подальшому зниженню жирових відкладень. Допомагає контролювати апетит.</p><h4>Лімфорен</h4><p>Лімфорен сприяє виведенню продуктів розпаду жиру. Він підтримує лімфодренаж. Зменшує набряковість.</p><h4>Чистоксин</h4><p>Чистоксин допомагає підтримувати очищення кишечника. Він сприяє нормалізації травлення. Підсилює ефект програми.</p><h4>МКЦ</h4><p>МКЦ сприяє контролю маси тіла. Вона допомагає підтримувати відчуття ситості. Підтримує здоров’я кишечника.</p><h4>Гепатовіт</h4><p>Гепатовіт підтримує функцію печінки. Він сприяє нормалізації обміну жирів. Підсилює детоксикаційні процеси.</p>", reviews:"★★★★★"},
+  {id:303, cat:"complex", title:"Комплекс для чоловіків для підвищеня потенції та предміхурової залози, Чоловіча сила - Простарин-N, Прокторин, Фаворит прост, Фунгіцин від Рослина Карпат", img:"https://i.postimg.cc/kXDdvbNv/Znimok-ekrana-2026-03-08-124908.png", price:1950, stars:"★★★★★", rating:"4.9 (1340)", specs:"<p>Фаворит Прост – 2 упаковки (чоловіче здоров’я)<br>Фунгіцин – 2 упаковка <br>Простарин N – 1 упаковка<br>Прокторин – 1 упаковка</p><h3>3. Комплекс для чоловіків</h3><h4>Опис програми</h4><p>Комплекс для чоловіків створений для всебічної підтримки чоловічого здоров’я, зокрема функції передміхурової залози, гормонального балансу та статевої активності. Програма спрямована на зменшення запальних процесів у простаті та покращення кровообігу в органах малого тазу. Вона допомагає зменшити дискомфорт при сечовипусканні, нічні позиви та відчуття неповного випорожнення сечового міхура. Комплекс також підтримує потенцію та лібідо, підвищуючи витривалість і якість інтимного життя. Важливою складовою є протигрибкова підтримка, оскільки приховані інфекції можуть провокувати хронічні запальні процеси. Програма діє поступово, без різкого гормонального втручання, підтримуючи природні механізми відновлення. Вона може застосовуватись при простатиті, аденомі простати, зниженні потенції та вікових змінах. Комплекс також сприяє покращенню загального самопочуття, зменшенню втоми та підвищенню впевненості. Регулярний курс допомагає стабілізувати стан та запобігти ускладненням. Рекомендується проходити курс під контролем стану організму.</p><h4>Простатин-N</h4><p>Простатин-N спрямований на зменшення запалення в передміхуровій залозі та покращення її функціонального стану. Він сприяє нормалізації сечовипускання та зменшенню набряку тканин простати. Підтримує здорову роботу чоловічої репродуктивної системи.</p><h4>Прокторин</h4><p>Прокторин покращує мікроциркуляцію в органах малого тазу та сприяє зменшенню застійних явищ. Він допомагає знизити дискомфорт і підтримує здоровий тонус судин. Сприяє покращенню загального стану сечостатевої системи.</p><h4>Фаворит Прост</h4><p>Фаворит Прост підтримує гормональний баланс та функцію передміхурової залози. Він допомагає покращити потенцію та витривалість. Сприяє зменшенню запальних процесів і підтримує чоловіче здоров’я.</p><h4>Фунгіцин</h4><p>Фунгіцин у цій програмі забезпечує протигрибкову підтримку, що важливо при хронічних урогенітальних інфекціях. Він допомагає усунути приховані фактори запалення. Підсилює загальний ефект відновлення.</p>", reviews:"★★★★★"},
+  {id:304, cat:"complex", title:"Потужна очисна програма організму - Лімфорен, Гельмінтозин, Дермісан, Гепатовіт, Фунгіцин, Мікобен, L Лізин комплекс від Рослина Карпат на 1 місяць", img:"https://i.postimg.cc/0jb5Q6dL/Znimok-ekrana-2026-03-02-211148.png", price:4835, stars:"★★★★★", rating:"4.8 (980)", specs:"<p>Мікобен – 1 упаковка (детокс організму)<br>Лімфорен – 2 упаковки (очищення лімфи)<br>Фунгіцин – 2 упаковки (проти грибків)<br>Гельмінтозин – 3 упаковки (від паразитів)<br>Дермісан – 2 упаковки (здоров’я шкіри)<br>Гепатовіт – 2 упаковки (підтримка печінки)<br>L-Лізин Про – 2 упаковки (антивірусна дія)</p><h3>4. Потужна очисна програма організму</h3><h4>Опис програми</h4><p>Потужна очисна програма організму є розширеним варіантом глибокого детоксикаційного курсу, спрямованого на всебічне очищення внутрішнього середовища. Вона включає протипаразитарну, протигрибкову, противірусну та гепатопротекторну підтримку. Програма застосовується при хронічних інтоксикаціях, шкірних захворюваннях, частих вірусних реактиваціях та зниженні імунітету. Комплекс дозволяє поступово вивести токсини, нормалізувати лімфовідтік та покращити роботу печінки. Важливою складовою є підтримка шкіри та слизових оболонок. Програма підходить людям із тривалими запальними процесами або системними проявами інтоксикації. Вона сприяє покращенню стану шкіри, зменшенню висипань та набряків. Також допомагає нормалізувати травлення та підвищити рівень енергії. Курс зазвичай триває близько одного місяця. Рекомендується проходити під наглядом спеціаліста.</p><h4>Гепатовіт</h4><p>Гепатовіт підтримує клітини печінки та активізує процеси детоксикації. Він покращує жовчовиділення та сприяє виведенню продуктів обміну. Зменшує навантаження на печінку під час очищення.</p><h4>Фунгіцин</h4><p>Фунгіцин допомагає контролювати грибкову флору та запобігає її надмірному росту. Він підтримує баланс мікроорганізмів. Сприяє зменшенню хронічних запальних процесів.</p><h4>Мікобен</h4><p>Мікобен нормалізує мікрофлору та підтримує здоров’я кишківника. Він допомагає зменшити здуття та дискомфорт. Посилює ефективність детоксикації.</p><h4>L-Лізин</h4><p>L-Лізин підтримує імунну систему та допомагає при вірусних навантаженнях, зокрема герпес-вірусах. Він сприяє відновленню тканин та слизових. Підсилює захисні функції організму.</p><h4>Лімфорен</h4><p>Лімфорен активує лімфатичний дренаж та сприяє виведенню токсинів. Зменшує набряковість і покращує загальне самопочуття. Підсилює системний ефект очищення.</p><h4>Гельмінтозин</h4><p>Гельмінтозин забезпечує антипаразитарну підтримку та допомагає виводити продукти життєдіяльності паразитів. Зменшує інтоксикаційні симптоми. Працює в комплексі з іншими засобами.</p><h4>Дермісан</h4><p>Дермісан підтримує здоров’я шкіри та сприяє зменшенню запальних проявів. Він допомагає очищенню через шкірні покриви. Підтримує відновлення тканин.</p>", reviews:"★★★★★"},
+  {id:305, cat:"complex", title:"Програма при артритах і артрозах - Антиревматин, Хондроїтин, Чорнокорінь Карпатський, Лімфорен Рослина Карпат", img:"https://i.postimg.cc/brsYJGH4/Znimok-ekrana-2026-03-02-211425.png", price:3374, stars:"★★★★★", rating:"4.9 (860)", specs:"<p>Чорнокорінь Карпатський – 2 упаковки (суглоби, біль)<br>Антиревматин М – 3 упаковки (проти запалення)<br>Хондроїтин Про – 2 упаковки (хрящова тканина)<br>Лімфорен – 2 упаковки (очищення лімфи)</p><h3>5. Програма при артритах і артрозах</h3><h4>Опис програми</h4><p>Програма при артритах і артрозах розроблена для комплексної підтримки суглобів, зменшення запальних процесів та відновлення хрящової тканини. Вона спрямована на усунення болю, скутості рухів і набряків, що часто супроводжують дегенеративні та запальні захворювання суглобів. Комплекс діє не лише симптоматично, а й працює з причинами руйнування хряща та порушення обміну речовин у суглобових тканинах. Програма покращує живлення хрящової тканини та стимулює процеси її регенерації. Вона також сприяє виведенню продуктів запалення через активацію лімфатичної системи. Регулярне застосування допомагає підвищити рухливість суглобів та зменшити хронічний біль. Програма підходить при ревматоїдному артриті, артрозі, остеохондрозі та вікових змінах опорно-рухового апарату. Вона може застосовуватись як профілактика прогресування дегенеративних процесів. Комплекс підтримує якість життя та фізичну активність. Курс рекомендується проходити системно для досягнення стабільного результату.</p><h4>Антиревматин</h4><p>Антиревматин має протизапальну дію та сприяє зменшенню больового синдрому в суглобах. Він допомагає знизити активність запального процесу та покращити рухливість. Підтримує тканини при ревматичних станах.</p><h4>Хондроїтин</h4><p>Хондроїтин є структурним компонентом хрящової тканини та сприяє її відновленню. Він допомагає зменшити руйнування хряща та покращує його еластичність. Підтримує здоров’я суглобів при тривалих навантаженнях.</p><h4>Чорнокорінь Карпатський</h4><p>Чорнокорінь Карпатський традиційно використовується для підтримки суглобів та зменшення болю. Він має м’яку протизапальну дію. Допомагає покращити загальний стан при хронічних захворюваннях суглобів.</p><h4>Лімфорен</h4><p>Лімфорен у цій програмі сприяє виведенню продуктів запалення та зменшенню набряків. Він активує лімфовідтік та покращує мікроциркуляцію. Підсилює ефект інших компонентів комплексу.</p>", reviews:"★★★★★"},
+  {id:306, cat:"complex", title:"Комплексна програма для серцево-судинної системи при атеросклерозі та підвищеному тиску, Рослина Карпат", img:"https://i.postimg.cc/mktZDcyW/Znimok-ekrana-2026-03-02-211613.png", price:2100, stars:"★★★★★", rating:"4.9 (1120)", specs:"<p>Вітакард – 1 упаковка (підтримка серця)<br>Нервостабін – 1 упаковка (нервова система)<br>Капісудин – 1 упаковка (судини мозку)<br>Лімфорен – 1 упаковка (очищення лімфи)<br>Лецитин – 2 упаковки (робота мозку)</p><h3>6. Комплексна програма для серцево-судинної системи</h3><h4>Опис програми</h4><p>Комплексна програма для серцево-судинної системи спрямована на підтримку роботи серця, зміцнення судин та нормалізацію артеріального тиску. Вона допомагає покращити еластичність судинних стінок і знизити ризик розвитку атеросклеротичних змін. Програма працює над покращенням кровообігу та постачання тканин киснем. Вона також сприяє зменшенню нервового напруження, яке часто впливає на показники тиску. Комплекс допомагає знизити рівень холестерину та підтримати здоровий ліпідний баланс. Регулярне застосування може сприяти зменшенню головного болю, запаморочень і відчуття серцебиття. Програма підходить при гіпертонії, вегето-судинній дистонії та початкових проявах атеросклерозу. Вона підтримує серцевий м’яз та покращує його витривалість. Комплекс рекомендований як профілактика серцево-судинних ускладнень. Курс підбирається індивідуально залежно від стану організму.</p><h4>Капісудин</h4><p>Капісудин зміцнює судинні стінки та покращує мікроциркуляцію. Він сприяє зменшенню ламкості капілярів та підтримує еластичність судин. Допомагає нормалізувати кровообіг.</p><h4>Нервостан</h4><p>Нервостан підтримує нервову систему та допомагає знизити рівень стресу. Він сприяє стабілізації емоційного стану. Опосередковано допомагає нормалізувати артеріальний тиск.</p><h4>Вітакард</h4><p>Вітакард підтримує функцію серцевого м’яза та покращує його живлення. Він сприяє підвищенню витривалості серця. Допомагає при відчутті серцебиття та слабкості.</p><h4>Лецитин</h4><p>Лецитин бере участь у регуляції жирового обміну та допомагає знижувати рівень холестерину. Він підтримує еластичність клітинних мембран. Сприяє профілактиці атеросклерозу.</p><h4>Лімфорен</h4><p>Лімфорен допомагає виводити продукти обміну та покращує лімфовідтік. Зменшує набряковість та підтримує детоксикаційні процеси. Підсилює загальний ефект програми.</p>", reviews:"★★★★★"},
+  {id:307, cat:"complex", title:"При варикозному розширені вен - комплексна програма лікування Рослина Карпат", img:"https://i.postimg.cc/2yVj6q7Y/Znimok-ekrana-2026-03-02-211809.png", price:1885, stars:"★★★★★", rating:"4.9 (1050)", specs:"<p>Буковиця Карпатська – 1 упаковка<br>Лімфорен – 1 упаковка (очищення лімфи)<br>Капісудин – 1 упаковка (судини мозку)<br>Лецитин – 1 упаковка (робота мозку)<br>Омега-3 – 1 упаковка (серце і судини)</p><h3>7. Програма при варикозі</h3><h4>Опис програми</h4><p>Програма при варикозному розширенні вен спрямована на зміцнення судинної стінки, покращення венозного відтоку та зменшення набряків нижніх кінцівок. Вона допомагає зменшити відчуття тяжкості в ногах, біль і нічні судоми. Комплекс працює над покращенням мікроциркуляції крові та зниженням застійних явищ у венах. Програма сприяє підвищенню еластичності судин та зменшенню їх ламкості. Вона також допомагає нормалізувати лімфовідтік, що особливо важливо при набряках. Регулярне застосування може зменшити прояв судинних “зірочок” та уповільнити прогресування варикозу. Комплекс підтримує здоров’я судин при тривалому стоянні або сидячій роботі. Програма підходить як на початкових стадіях варикозу, так і для профілактики у групі ризику. Вона може використовуватися в поєднанні з компресійною терапією. Курс застосування підбирається індивідуально для досягнення максимального ефекту.</p><h4>Лімфорен</h4><p>Лімфорен покращує лімфодренаж та допомагає зменшити набряки нижніх кінцівок. Він сприяє виведенню надлишкової рідини та продуктів обміну. Підсилює ефект судинозміцнюючих компонентів програми.</p><h4>Капісудин</h4><p>Капісудин зміцнює стінки судин та зменшує їх проникність. Він сприяє покращенню венозного тонусу та мікроциркуляції. Допомагає знизити ризик подальшого розширення вен.</p><h4>Лецитин</h4><p>Лецитин підтримує жировий обмін та еластичність клітинних мембран. Він сприяє зниженню рівня холестерину. Покращує стан судинної системи в цілому.</p><h4>Буковиця Карпатська</h4><p>Буковиця Карпатська традиційно використовується для підтримки судин та зменшення запалення. Вона сприяє покращенню кровообігу. Допомагає зменшити дискомфорт у ногах.</p>", reviews:"★★★★★"},
+  {id:308, cat:"complex", title:"Комплексна програма для зміцнення імунітету Рослина Карпат", img:"https://i.postimg.cc/d3LQ17jv/Znimok-ekrana-2026-03-02-212018.png", price:1770, stars:"★★★★★", rating:"4.8 (890)", specs:"<p>Імуностан – 1 упаковка (підтримка імунітету)<br>Фітосвічки Апі-вітин – 1 штука (протизапальна дія)<br>Лімфорен – 1 упаковка (очищення лімфи)<br>Спіруліна – 1 упаковка (енергія організму)<br>Вітамін D3 – 1 упаковка (імунітет)<br>Вітамін C – 1 упаковка (захист організму)</p><h3>8. Комплексна програма для зміцнення імунітету</h3><h4>Опис програми</h4><p>Комплексна програма для зміцнення імунітету спрямована на підвищення захисних сил організму та покращення його стійкості до вірусних і бактеріальних інфекцій. Вона допомагає активізувати природні механізми імунного захисту. Програма сприяє швидшому відновленню після перенесених захворювань. Комплекс підтримує роботу лімфатичної системи та нормалізує обмінні процеси. Він забезпечує організм необхідними мікроелементами та біологічно активними речовинами. Регулярне застосування допомагає зменшити частоту сезонних застуд. Програма підходить дорослим і дітям у періоди підвищеного ризику захворюваності. Вона сприяє підвищенню енергії та витривалості. Комплекс можна використовувати як профілактичний курс кілька разів на рік. Підбір тривалості прийому здійснюється індивідуально.</p><h4>Лімфорен</h4><p>Лімфорен активує лімфатичну систему та сприяє очищенню організму. Він покращує циркуляцію лімфи та виведення токсинів. Підсилює роботу імунної системи.</p><h4>Апівітин</h4><p>Апівітин містить біологічно активні компоненти бджільництва, які підтримують імунітет. Він сприяє підвищенню опірності організму до інфекцій. Допомагає швидше відновитися після хвороби.</p><h4>Спіруліна</h4><p>Спіруліна є джерелом білка, вітамінів та мікроелементів. Вона підтримує обмін речовин та зміцнює організм. Сприяє підвищенню загального тонусу.</p><h4>Вітамін D3</h4><p>Вітамін D3 відіграє важливу роль у регуляції імунної відповіді. Він підтримує здоров’я кісток та нервової системи. Допомагає знизити ризик частих інфекцій.</p><h4>Імуностан</h4><p>Імуностан стимулює природні захисні механізми організму. Він сприяє активізації імунних клітин. Підвищує стійкість до вірусних захворювань.</p>", reviews:"★★★★★"},
+  {id:309, cat:"complex", title:"Програма для відновлення роботи ШКТ Рослина Карпат (травлення, печінка і підшлункова залоза)", img:"https://i.postimg.cc/x8cjCk3n/Znimok-ekrana-2026-03-02-212150.png", price:1275, stars:"★★★★★", rating:"4.9 (760)", specs:"<p>Травлесел – 1 упаковка<br>Інулін з селеном – 1 упаковка<br>Гепатовіт – 1 упаковка<br>Біфідолактин-Д – 1 упаковка (пробіотик)</p><h3>9. Програма для шлунково-кишкового тракту (ШКТ)</h3><h4>Опис програми</h4><p>Програма для шлунково-кишкового тракту спрямована на нормалізацію травлення та відновлення мікрофлори кишечника. Вона допомагає усунути здуття, дискомфорт та порушення випорожнення. Комплекс підтримує функцію печінки та жовчовидільної системи. Програма сприяє покращенню засвоєння поживних речовин. Вона допомагає відновити баланс корисних бактерій у кишечнику. Регулярне застосування може зменшити прояви гастриту та функціональних розладів травлення. Комплекс сприяє м’якому очищенню організму. Програма підходить після антибіотикотерапії або харчових отруєнь. Вона допомагає покращити загальний стан та самопочуття. Курс застосування підбирається залежно від індивідуальних потреб.</p><h4>Біфідолактин-Д</h4><p>Біфідолактин-Д містить корисні пробіотичні культури. Він сприяє відновленню мікрофлори кишечника. Покращує травлення та імунний захист.</p><h4>Інулін з селеном</h4><p>Інулін є пребіотиком, що стимулює ріст корисних бактерій. Селен підтримує антиоксидантний захист організму. Разом вони покращують функцію кишечника.</p><h4>Гепатовіт</h4><p>Гепатовіт підтримує функцію печінки та сприяє детоксикації. Він покращує жовчовиділення. Допомагає зменшити навантаження на травну систему.</p><h4>Травлесил</h4><p>Травлесил містить рослинні компоненти для підтримки травлення. Він допомагає зменшити спазми та здуття. Сприяє нормалізації роботи кишечника.</p>", reviews:"★★★★★"},
+  {id:310, cat:"complex", title:"Комплексна програма при цукровому діабеті і попередженні його ускладнень, Рослина Карпат", img:"https://i.postimg.cc/CLdVsqCC/Znimok-ekrana-2026-03-08-130153.png", price:2675, old:3077, badge:"-15%", stars:"★★★★★", rating:"4.9 (1340)", specs:"<p>Інулін з селеном – 2 упаковки (мікрофлора кишечника)<br>Омега-3 – 1 упаковка (серце)<br>Гепатовіт – 2 упаковки (печінка)<br>Біфідолактин Д – 2 упаковки (пробіотик)</p><h3>10. Комплекс при цукровому діабеті</h3><h4>Опис програми</h4><p>Комплекс при цукровому діабеті спрямований на підтримку вуглеводного обміну та нормалізацію рівня глюкози в крові. Він допомагає покращити чутливість клітин до інсуліну. Програма підтримує функцію підшлункової залози та печінки. Комплекс сприяє нормалізації мікрофлори кишечника, що впливає на обмін речовин. Він забезпечує організм необхідними жирними кислотами та мікроелементами. Регулярне застосування допомагає знизити ризик ускладнень. Програма підтримує серцево-судинну систему, яка часто страждає при діабеті. Вона сприяє покращенню загального самопочуття та рівня енергії. Комплекс може застосовуватися як доповнення до основної терапії. Перед застосуванням рекомендується консультація спеціаліста.</p><h4>Омега-3</h4><p>Омега-3 підтримує серцево-судинну систему та покращує ліпідний обмін. Вона сприяє зменшенню запальних процесів. Допомагає підтримувати здоров’я судин.</p><h4>Інулін з селеном</h4><p>Інулін допомагає стабілізувати рівень глюкози в крові. Селен підтримує антиоксидантний захист. Разом вони сприяють покращенню обміну речовин.</p><h4>Біфідолактин-Д</h4><p>Біфідолактин-Д відновлює мікрофлору кишечника. Він покращує травлення та засвоєння поживних речовин. Підтримує імунітет.</p><h4>Гепатовіт</h4><p>Гепатовіт підтримує функцію печінки та сприяє нормалізації обміну речовин. Він допомагає зменшити токсичне навантаження на організм. Підсилює дію інших компонентів комплексу.</p>", reviews:"★★★★★"},
+  {id:311, cat:"complex", title:"Програма відновлення після очисної програми організму Рослина Карпат", img:"https://i.postimg.cc/BbXZ68BZ/Znimok-ekrana-2026-03-02-212602.png", price:4015, stars:"★★★★★", rating:"4.8 (920)", specs:"<p>Лецитин – 3 упаковки (робота мозку)<br>Біфідолактин – 2 упаковка (мікрофлора)<br>Травлесел – 2 упаковка (селен)<br>Інулін з селеном – 2 упаковка (пребіотик)<br>Спіруліна – 2 упаковка (енергія)</p><h3>10. Програма відновлення після очисної програми</h3><h4>Опис програми</h4><p>Програма відновлення після очисного курсу спрямована на стабілізацію результатів детоксикації. Вона допомагає відновити баланс мікрофлори кишечника. Комплекс підтримує функцію печінки та травної системи. Програма сприяє м’якій адаптації організму після інтенсивного очищення. Вона допомагає зменшити можливі прояви слабкості або дискомфорту. Комплекс підтримує імунну систему. Регулярне застосування сприяє закріпленню отриманих результатів. Програма допомагає відновити енергетичний баланс. Вона підтримує процеси регенерації тканин. Тривалість курсу визначається індивідуально залежно від стану організму.</p><h4>Біфідолактин-Д</h4><p>Біфідолактин-Д містить пробіотичні культури. Він сприяє відновленню мікрофлори кишечника. Підтримує імунітет після очищення.</p><h4>Інулін з селеном</h4><p>Інулін підтримує ріст корисних бактерій. Селен забезпечує антиоксидантний захист. Разом вони сприяють стабілізації травлення.</p><h4>Гепатовіт</h4><p>Гепатовіт підтримує клітини печінки. Він сприяє нормалізації жовчовиділення. Допомагає закріпити результат детоксикації.</p><h4>Лімфорен</h4><p>Лімфорен підтримує лімфатичну систему. Він сприяє м’якому виведенню залишкових токсинів. Допомагає стабілізувати стан організму.</p>", reviews:"★★★★★"},
+  {id:312, cat:"complex", title:"При захворюванні верхніх дихальних шляхів (ВДШ) ГРВІ, ГРЗ - комплексна програма Рослина Карпат", img:"https://i.postimg.cc/3NdrRyFw/Znimok-ekrana-2026-03-02-212745.png", price:2730, stars:"★★★★★", rating:"4.9 (980)", specs:"<p>Антивірин – 1 упаковка (проти вірусів)<br>Мікобен – 1 упаковка (детокс організму)<br>Цетрарія Карпатська – 1 упаковка (легені, кашель)<br>Імуностан – 1 упаковка (підтримка імунітету)<br>Лімфорен – 1 упаковка (очищення лімфи)<br>Вітамін C – 1 упаковка (захист організму)<br>Хлорофіліпт – 1 флакон (антибактеріальна дія)</p><h3>11. Програма при захворюваннях верхніх дихальних шляхів (ВДШ)</h3><h4>Опис програми</h4><p>Програма при захворюваннях верхніх дихальних шляхів спрямована на підтримку організму під час ГРВІ, ГРЗ, фарингіту та інших запальних процесів. Вона допомагає зменшити прояви запалення слизових оболонок та полегшити дихання. Комплекс сприяє підвищенню противірусного захисту організму. Програма підтримує імунну відповідь та допомагає скоротити тривалість хвороби. Вона сприяє швидшому відновленню після перенесених інфекцій. Комплекс допомагає зменшити інтоксикацію та покращити загальне самопочуття. Регулярне застосування може знизити ризик ускладнень. Програма підходить як у період захворювання, так і для профілактики в сезон підвищеної захворюваності. Вона підтримує лімфатичну систему та очищення організму. Тривалість курсу підбирається індивідуально залежно від стану.</p><h4>Мікобен</h4><p>Мікобен сприяє протигрибковому та антимікробному захисту організму. Він підтримує баланс мікрофлори. Допомагає зменшити навантаження на імунну систему.</p><h4>Імуностан</h4><p>Імуностан активізує природні механізми захисту організму. Він сприяє підвищенню активності імунних клітин. Допомагає швидше впоратися з вірусною інфекцією.</p><h4>Антивірин</h4><p>Антивірин підтримує противірусний захист. Він допомагає зменшити прояви інтоксикації. Сприяє швидшому відновленню організму.</p><h4>Цетрарія Карпатська</h4><p>Цетрарія Карпатська традиційно використовується при захворюваннях дихальних шляхів. Вона пом’якшує слизову оболонку горла. Сприяє зменшенню кашлю та подразнення.</p><h4>Лімфорен</h4><p>Лімфорен підтримує роботу лімфатичної системи. Він сприяє виведенню токсинів. Підсилює загальний оздоровчий ефект програми.</p>", reviews:"★★★★★"},
+  {id:313, cat:"complex", title:"Для підтримки спортсменів - комплексна програма Рослина Карпат", img:"https://i.postimg.cc/yxk6dJyd/Znimok-ekrana-2026-03-02-212902.png", price:4180, stars:"★★★★★", rating:"4.8 (850)", specs:"<p>L-Глютамін – 2 упаковки (відновлення кишечника)<br>L-Лізин – 2 упаковки (антивірусна дія)<br>L-Карнітин – 2 упаковки (енергія організму)<br>Омега-3 – 1 упаковка (серце і судини)<br>Кальцимін – 1 упаковка (міцність кісток)<br>Хондроїтин – 2 упаковки (здоров’я суглобів)</p><h3>12. Комплексна програма для спортсменів</h3><h4>Опис програми</h4><p>Комплексна програма для спортсменів спрямована на підтримку організму при підвищених фізичних навантаженнях. Вона допомагає прискорити відновлення після тренувань та змагань. Комплекс сприяє зміцненню суглобів і зв’язок. Програма підтримує енергетичний обмін та витривалість. Вона допомагає зменшити ризик травм опорно-рухового апарату. Комплекс сприяє нарощуванню м’язової маси та збереженню м’язового тонусу. Регулярне застосування допомагає покращити спортивні показники. Програма підтримує серцево-судинну систему під час інтенсивних тренувань. Вона забезпечує організм важливими амінокислотами та жирними кислотами. Курс застосування підбирається відповідно до індивідуального рівня навантажень.</p><h4>Хондроїтин PRO</h4><p>Хондроїтин PRO підтримує здоров’я суглобового хряща. Він сприяє зменшенню зношування суглобів. Допомагає підтримувати їх рухливість.</p><h4>L-Лізин PRO</h4><p>L-Лізин PRO є важливою амінокислотою для відновлення тканин. Він сприяє синтезу білка. Підтримує імунітет при фізичних навантаженнях.</p><h4>Омега-3 PRO</h4><p>Омега-3 PRO підтримує серцево-судинну систему. Вона сприяє зменшенню запальних процесів у м’язах. Допомагає швидше відновитися після тренувань.</p><h4>L-Глютамін PRO</h4><p>L-Глютамін PRO сприяє відновленню м’язової тканини. Він підтримує імунітет при інтенсивних тренуваннях. Допомагає зменшити м’язову втому.</p><h4>L-Карнітин PRO</h4><p>L-Карнітин PRO підтримує енергетичний обмін. Він сприяє використанню жирів як джерела енергії. Допомагає підвищити витривалість.</p><h4>Кальцемін</h4><p>Кальцемін підтримує здоров’я кісткової тканини. Він сприяє зміцненню кісток та зубів. Підтримує опорно-руховий апарат при навантаженнях.</p>", reviews:"★★★★★"},
+  {id:314, cat:"complex", title:"Комплексна програма для підтримки зору, лікування Рослина Карпат", img:"https://i.postimg.cc/gjncJwHj/Znimok-ekrana-2026-03-02-213027.png", price:3170, stars:"★★★★★", rating:"4.9 (1670)", specs:"<p>Офтальмосан – 2 упаковка (підтримка зору)<br>Омега-3 – 2 упаковка (судини очей)<br>Гінкго білоба – 1 упаковка (кровообіг мозку)<br>L-Глютамін – 2 упаковки (відновлення організму)</p><h3>13. Комплексна програма для підтримки зору</h3><h4>Опис програми</h4><p>Комплексна програма для підтримки зору спрямована на захист очей від перевтоми та вікових змін. Вона допомагає покращити мікроциркуляцію в тканинах ока. Комплекс сприяє зменшенню сухості та подразнення очей. Програма підтримує сітківку та зоровий нерв. Вона допомагає знизити негативний вплив тривалої роботи за комп’ютером. Комплекс містить компоненти з антиоксидантною дією. Регулярне застосування сприяє покращенню чіткості зору. Програма підтримує судини очей. Вона може використовуватися як профілактичний курс кілька разів на рік. Тривалість прийому визначається індивідуально.</p><h4>Омега-3</h4><p>Омега-3 підтримує здоров’я судин очей. Вона сприяє зменшенню сухості. Підтримує функцію сітківки.</p><h4>L-Глютамін PRO</h4><p>L-Глютамін PRO підтримує обмінні процеси в тканинах. Він сприяє відновленню клітин. Підтримує загальний тонус організму.</p><h4>Гінкго білоба</h4><p>Гінкго білоба покращує мікроциркуляцію крові. Він підтримує живлення тканин ока. Сприяє зменшенню відчуття перевтоми.</p><h4>Офтальмосан</h4><p>Офтальмосан містить компоненти для підтримки зорової функції. Він сприяє захисту сітківки від окисного стресу. Підтримує здоров’я очей.</p>", reviews:"★★★★★"},
+  {id:315, cat:"complex", title:"Комплексна програма для частохворіючих дітей Рослина Карпат", img:"https://i.postimg.cc/Vvds6SW5/Znimok-ekrana-2026-03-02-213516.png", price:1745, stars:"★★★★★", rating:"4.9 (1030)", specs:"<p>Антивірин – 1 упаковка (проти вірусів)<br>Мікобен – 1 упаковка (детокс організму)<br>Аргентум SE – 1 флакон (антибактеріальний захист)<br>Вітамін D3 – 1 упаковка (імунітет, кістки)<br>L-Лізин Про – 1 упаковка (антивірусна дія)</p><h3>14. Комплексна програма для часто хворіючих дітей</h3><h4>Опис програми</h4><p>Комплексна програма для часто хворіючих дітей спрямована на зміцнення імунітету та підвищення стійкості до інфекцій. Вона допомагає зменшити частоту сезонних застуд та вірусних захворювань. Комплекс підтримує роботу лімфатичної системи. Програма сприяє активізації природних захисних механізмів організму. Вона допомагає організму швидше відновлюватися після хвороби. Комплекс забезпечує дитячий організм важливими мікроелементами. Регулярне застосування сприяє підвищенню енергії та активності дитини. Програма підходить для профілактичного застосування в осінньо-зимовий період. Вона допомагає підтримувати здоров’я слизових оболонок. Курс застосування визначається індивідуально з урахуванням віку.</p><h4>Мікобен</h4><p>Мікобен підтримує баланс мікрофлори. Він сприяє зниженню мікробного навантаження. Підтримує імунітет.</p><h4>Антивірин</h4><p>Антивірин сприяє противірусному захисту. Він допомагає зменшити прояви застуди. Підтримує організм у період захворювання.</p><h4>Аргентум SE</h4><p>Аргентум SE має антимікробні властивості. Він підтримує імунну систему. Сприяє зменшенню запальних процесів.</p><h4>Вітамін D3</h4><p>Вітамін D3 підтримує формування імунної відповіді. Він важливий для росту кісток. Підтримує загальний розвиток організму.</p><h4>L-Лізин PRO</h4><p>L-Лізин PRO підтримує синтез білка та відновлення тканин. Він сприяє зміцненню імунітету. Підтримує організм у період активного росту.</p>", reviews:"★★★★★"},
+  {id:316, cat:"complex", title:"Комплексна програма для зміцнення опорно-рухового апарату Рослина Карпат", img:"https://i.postimg.cc/yxt1SVLs/Znimok-ekrana-2026-03-02-213654.png", price:3796, stars:"★★★★★", rating:"4.8 (1120)", specs:"<p>Чорнокорінь Карпатський – 1 упаковка (суглоби, біль)<br>Антиревматин М – 2 упаковка (проти запалення)<br>Кальміцин – 2 упаковка (кальцій, кістки)<br>Хондроїтин Про – 2 упаковка (хрящова тканина)<br>Колаген Б’юті – 2 упаковка (шкіра, волосся)</p><h3>15. Комплексна програма для зміцнення опорно-рухового апарату</h3><h4>Опис програми</h4><p>Комплексна програма для зміцнення опорно-рухового апарату спрямована на підтримку здоров’я суглобів, хрящів, зв’язок та кісткової тканини. Вона допомагає зменшити біль і скутість рухів. Програма сприяє покращенню рухливості суглобів та їх еластичності. Комплекс підтримує процеси відновлення хрящової тканини. Він допомагає зменшити запальні прояви у суглобах. Програма підходить людям із підвищеним фізичним навантаженням та віковими змінами. Вона сприяє зміцненню кісткової тканини та профілактиці дегенеративних процесів. Регулярне застосування допомагає покращити якість життя при хронічних захворюваннях суглобів. Комплекс може використовуватися як профілактичний курс. Тривалість прийому визначається індивідуально залежно від стану організму.</p><h4>Хондроїтин PRO</h4><p>Хондроїтин PRO сприяє відновленню хрящової тканини. Він підтримує еластичність суглобів. Допомагає зменшити дискомфорт під час руху.</p><h4>Кальцемін</h4><p>Кальцемін підтримує міцність кісткової тканини. Він сприяє правильному засвоєнню кальцію. Підтримує здоров’я опорно-рухового апарату.</p><h4>Чорнокорінь Карпатський</h4><p>Чорнокорінь Карпатський традиційно використовується для підтримки суглобів. Він сприяє зменшенню запальних процесів. Підтримує рухливість.</p><h4>Колаген Beauty</h4><p>Колаген Beauty сприяє відновленню сполучної тканини. Він підтримує еластичність зв’язок і суглобів. Покращує стан шкіри та суглобів.</p><h4>Антиревматин М</h4><p>Антиревматин М підтримує суглоби при запальних процесах. Він сприяє зменшенню болю. Підсилює дію інших компонентів комплексу.</p>", reviews:"★★★★★"},
+  {id:317, cat:"complex", title:"Ангіна (фарингіт) лікування від Рослина Карпат, комплексна програма", img:"https://i.postimg.cc/yxk6dJyJ/Znimok-ekrana-2026-03-02-213757.png", price:2080, stars:"★★★★★", rating:"4.9 (1450)", specs:"<p>Аргентум C – 1 флакон (антибактеріальна дія)<br>Аргентум S – 1 флакон (антисептична дія)<br>Імуностан – 1 упаковка (підтримка імунітету)<br>Мікобен – 1 упаковка (детокс організму)<br>Антивірин – 1 упаковка (проти вірусів)<br>Біфідолактин – 1 упаковка (мікрофлора кишечника)</p><h3>16. Програма при ангіні (фарингіті)</h3><h4>Опис програми</h4><p>Програма при ангіні та фарингіті спрямована на підтримку організму під час запальних процесів у горлі. Вона допомагає зменшити біль, подразнення та набряк слизової оболонки. Комплекс сприяє активізації противірусного та антимікробного захисту. Програма підтримує імунну систему в період гострого захворювання. Вона допомагає скоротити тривалість хвороби. Комплекс сприяє зменшенню інтоксикації організму. Регулярне застосування може знизити ризик ускладнень. Програма підтримує мікрофлору кишечника під час лікування. Вона підходить як при гострому, так і при хронічному перебігу. Тривалість курсу визначається індивідуально.</p><h4>Аргентум C</h4><p>Аргентум C має антимікробні властивості. Він сприяє зменшенню запалення в горлі. Підтримує місцевий імунітет.</p><h4>Аргентум S</h4><p>Аргентум S доповнює протимікробну дію комплексу. Він сприяє зниженню бактеріального навантаження. Підтримує відновлення слизової.</p><h4>Антивірин</h4><p>Антивірин підтримує противірусний захист організму. Він допомагає зменшити прояви інтоксикації. Сприяє швидшому одужанню.</p><h4>Імуностан</h4><p>Імуностан активізує імунну відповідь. Він підвищує стійкість організму до інфекцій. Підсилює ефект програми.</p><h4>Мікобен</h4><p>Мікобен підтримує баланс мікрофлори. Він сприяє зниженню грибкового навантаження. Допомагає комплексно впливати на причини захворювання.</p><h4>Біфідолактин</h4><p>Біфідолактин підтримує здорову мікрофлору кишечника. Він сприяє зміцненню імунітету. Допомагає організму швидше відновитися.</p>", reviews:"★★★★★"},
+  {id:318, cat:"complex", title:"Вірусна кишкова інфекція (рота вірус, ентеровірус) - комплексна програма лікування Рослина Карпат", img:"https://i.postimg.cc/XqmjyVsV/Znimok-ekrana-2026-03-02-213856.png", price:1700, stars:"★★★★★", rating:"4.8 (890)", specs:"<p>Травлесел – 1 упаковка (селен, імунітет)<br>Мікобен – 1 упаковка (детокс організму)<br>Інулін з селеном – 1 упаковка (мікрофлора кишечника)<br>Біфідолактен – 1 упаковка (пробіотик)<br>Аргентум C – 1 флакон (антибактеріальна дія)</p><h3>17. Програма при вірусній кишковій інфекції</h3><h4>Опис програми</h4><p>Програма при вірусній кишковій інфекції спрямована на підтримку організму під час розладів травлення. Вона допомагає зменшити прояви діареї та інтоксикації. Комплекс сприяє відновленню мікрофлори кишечника. Програма підтримує водно-сольовий баланс. Вона допомагає зменшити запальні процеси у слизовій оболонці кишечника. Комплекс сприяє швидшому відновленню після перенесеної інфекції. Регулярне застосування допомагає нормалізувати травлення. Програма підтримує імунітет у період захворювання. Вона може застосовуватися як доповнення до основної терапії. Тривалість курсу підбирається індивідуально.</p><h4>Інулін з селеном</h4><p>Інулін підтримує ріст корисної мікрофлори. Селен забезпечує антиоксидантний захист. Разом вони сприяють відновленню кишечника.</p><h4>Біфідолактин</h4><p>Біфідолактин містить пробіотичні культури. Він допомагає нормалізувати травлення. Підтримує імунний захист.</p><h4>Травлесил</h4><p>Травлесил сприяє зменшенню спазмів та здуття. Він підтримує функцію кишечника. Допомагає нормалізувати випорожнення.</p><h4>Мікобен</h4><p>Мікобен підтримує антимікробний баланс. Він сприяє зменшенню навантаження на імунну систему. Допомагає комплексно впливати на причину розладу.</p><h4>Аргентум C</h4><p>Аргентум C має антимікробну дію. Він підтримує організм у період інфекції. Сприяє зменшенню запалення.</p>", reviews:"★★★★★"},
+  {id:319, cat:"complex", title:"Допомога при грижах та протрузіях - комплексна програма Рослина Карпат", img:"https://i.postimg.cc/mkJLFbmg/Znimok-ekrana-2026-03-02-213942.png", price:2919, stars:"★★★★★", rating:"4.9 (980)", specs:"<p>Пропаїн – 2 упаковки (ферменти травлення)<br>Антиревматин М – 3 упаковки (суглоби, запалення)<br>Лімфорен – 2 упаковки (очищення лімфи)<br>Грифон – 1 упаковка (нервова система)</p><h3>18. Допомога при грижах та протрузіях</h3><h4>Опис програми</h4><p>Програма допомоги при грижах та протрузіях спрямована на підтримку хребта та міжхребцевих дисків. Вона допомагає зменшити біль та дискомфорт у спині. Комплекс сприяє зниженню запальних процесів. Програма підтримує відновлення сполучної тканини. Вона допомагає покращити рухливість та зменшити м’язову напругу. Комплекс сприяє покращенню кровопостачання тканин хребта. Регулярне застосування допомагає зменшити ризик загострень. Програма підходить при дегенеративних змінах опорно-рухового апарату. Вона може використовуватися як підтримуючий курс. Тривалість прийому визначається індивідуально.</p><h4>Грифон</h4><p>Грифон підтримує нервову систему. Він сприяє зменшенню м’язової напруги. Допомагає покращити самопочуття.</p><h4>Лімфорен</h4><p>Лімфорен сприяє виведенню токсинів. Він підтримує лімфодренаж. Підсилює загальний оздоровчий ефект.</p><h4>Пропаїн</h4><p>Пропаїн сприяє зменшенню запальних процесів. Він підтримує відновлення тканин. Допомагає зменшити дискомфорт.</p><h4>Антиревматин М</h4><p>Антиревматин М підтримує суглоби та хребет. Він сприяє зменшенню болю. Підсилює дію інших компонентів програми.</p>", reviews:"★★★★★"},
+
+  // Контроль ваги
+  {id:400, cat:"weight", title:"L-Карнітин Pro", img:"https://i.postimg.cc/JzRxw7hX/Znimok-ekrana-2026-03-01-182850.png", price:345, stars:"★★★★★", rating:"4.9 (540)", specs:"L-Карнітин Pro від компанії «Рослина Карпат» — це амінокислота для стимулювання енергетичних процесів шляхом спалювання жирів під час фізичної активності. Препарат підвищує витривалість організму, перетворюючи жир на енергію, сприяє зниженню маси тіла та нормалізує жировий обмін. Він покращує функцію зору, гальмує дистрофічні зміни судин сітківки та виводить токсини при алкоголізмі. Склад включає L-карнітин тартрат, який прискорює регенерацію тканин та сприяє зростанню м'язової маси. Рекомендується приймати по 1-2 капсули на день перед тренуванням для досягнення оптимальних результатів.", reviews:"Жир іде, енергія росте ★★★★★"},
+  {id:401, cat:"weight", title:"Ідеал-body universal", img:"https://i.postimg.cc/Cxw7yMKb/Znimok-ekrana-2026-03-01-183344.png", price:370, stars:"★★★★★", rating:"4.8 (620)", specs:"Ідеал-body universal від «Рослина Карпат» — це фітокомплекс для корекції ваги, який сприяє спалюванню жиру та поліпшенню обміну речовин. Він зменшує прояв целюліту, підвищує еластичність шкіри, покращує відтік жовчі та допомагає їжі швидше перетравлюватися. Препарат знижує апетит, виводить зайву рідину та токсини, сприяючи нормалізації роботи жовчного міхура. Склад: насіння льону 150 мг, трава бардакош 50 мг, лист м'яти 50 мг, плоди гуарани 20 мг, листя сенни, кропива, хвощ польовий, корінь солодки. Рекомендується для людей з надмірною вагою, приймати по 1-2 капсули на день під час їжі курсом 1-2 місяці.", reviews:"Апетит під контролем ★★★★★"},
+
+  // Жіноче здоров'я
+  {id:410, cat:"female", title:"Ледіанорм", img:"https://i.postimg.cc/Y93Y3kMQ/Znimok-ekrana-2026-03-01-192526.png", price:365, stars:"★★★★★", rating:"4.9 (780)", specs:"Ледіанорм від «Рослина Карпат» — натуральний рослинний комплекс для підтримки функціонального стану жіночих репродуктивних органів та здоров'я молочних залоз. Він сприяє нормалізації гормонального балансу, зменшує запальні процеси в жіночій статевій сфері та знижує ризик гормоно-залежних пухлин. Препарат відновлює менструальний цикл, полегшує ПМС, допомагає при мастопатії, ендометріозі та безплідді. Склад включає екстракти борової матки, червоної щітки та інші трави, які мають антиоксидантну та протизапальну дію. Рекомендується приймати по 1 таблетці 2 рази на день курсом 1-3 місяці для комплексного оздоровлення.", reviews:"Цикл став як годинник ★★★★★"},
+  {id:411, cat:"female", title:"Клімаксин", img:"https://i.postimg.cc/pLPCNVdh/01.png", price:320, stars:"★★★★★", rating:"4.8 (650)", specs:"Клімаксин від «Рослина Карпат» — фітозасіб для відновлення гормональної системи у жінок в період менопаузи. Він нормалізує гормональний фон, зменшує припливи, нічне потіння, дратівливість, безсоння та сухість слизових. Препарат регулює обмін речовин, заспокоює пульс, нормалізує тиск та підтримує серцево-судинну систему. Склад на основі фітоестрогенів та заспокійливих трав, без синтетичних гормонів. Рекомендується приймати по 1 таблетці 2 рази на день курсом 1-2 місяці для полегшення симптомів клімаксу.", reviews:"Припливи майже зникли ★★★★★"},
+  {id:412, cat:"female", title:"Гінекоурин фітосвічки", img:"https://i.postimg.cc/Yjcg3xhL/Znimok-ekrana-2026-03-01-194013.png", price:290, stars:"★★★★★", rating:"4.9 (430)", specs:"Гінекоурин фітосвічки від «Рослина Карпат» — натуральний засіб місцевої дії для підтримки сечостатевої системи у жінок та чоловіків. Вони володіють протизапальною, протинабряковою, знеболювальною, ранозагоювальною та антибактеріальною дією. Препарат сприяє відновленню менструального циклу, усуває запалення шийки матки, простати та прямої кишки, допомагає при ерозіях, дисплазіях та після операцій. Склад: жир рослинний, екстракти борової матки, червоного кореня, календули та Quantum Dots для посилення ефекту. Рекомендується вводити ректально по 1 свічці на ніч курсом 10-20 днів.", reviews:"Дуже делікатно працює ★★★★★"},
+  {id:413, cat:"female", title:"Вагіфлорин фітосвічки", img:"https://i.postimg.cc/cCtwwz4B/Znimok-ekrana-2026-03-01-193949.png", price:290, stars:"★★★★★", rating:"4.8 (510)", specs:"Вагіфлорин фітосвічки від «Рослина Карпат» — натуральний засіб для відновлення вагінальної мікрофлори та лікування запальних захворювань жіночих статевих органів. Вони сприяють зменшенню запалення, прискорюють загоєння ерозій, мають противірусну, антибактеріальну та протигрибкову дію. Препарат нормалізує баланс лактобактерій, усуває свербіж, подразнення, неприємний запах та сухість. Склад: жир рослинний, екстракти ромашки, шавлії, деревію та лактобактерії. Рекомендується вводити вагінально по 1 свічці на ніч курсом 10 днів для підтримки жіночого здоров'я.", reviews:"Комфорт повернувся ★★★★★"},
+  {id:413, cat:"female", title:"Міо-інозитол Pro", img:"https://i.postimg.cc/DZgLgFnQ/Znimok-ekrana-2026-03-01-192706.png", price:375, stars:"★★★★★", rating:"4.8 (510)", specs:"Міо-Інозитол — натуральна сполука, яка відіграє важливу роль у гормональній регуляції, передачі клітинних сигналів та обміні вуглеводів. Діє як підтримка для гормонального балансу, покращує чутливість до інсуліну, сприяє правильному функціонуванню репродуктивної системи, підтримує здоров’я яєчників та стабільний менструальний цикл у жінок. Також допомагає підтримати нормальний метаболізм глюкози та сприяє покращенню когнітивних функцій.", reviews:"★★★★★"},
+
+  // Чоловіче та жіноче здоров'я (універсальні фітосвічки)
+  {id:420, cat:"male-female", title:"Болиголин фітосвічки", img:"https://i.postimg.cc/NF2mmnf7/Znimok-ekrana-2026-03-01-193924.png", price:650, stars:"★★★★★", rating:"4.9 (320)", specs:"Болиголин фітосвічки від «Рослина Карпат» — натуральний засіб з протизапальною, імуномодулюючою та очищувальною дією для профілактики новоутворень. Вони мають знеболювальний, спазмолітичний та заспокійливий ефект, зупиняють ріст метастазів та сприяють зменшенню пухлин різного характеру. Препарат нормалізує судинний тонус, підтримує імунну систему та допомагає при геморої, простатиті, гінекологічних запаленнях. Склад: екстракти рослин та Quantum Dots для посилення ефекту. Рекомендується вводити ректально по 1 свічці на ніч курсом 10-20 днів у комплексних програмах.", reviews:"Швидко знімає біль ★★★★★"},
+  {id:421, cat:"male-female", title:"Прокторин фітосвічки", img:"https://i.postimg.cc/F1tcZx7L/Znimok-ekrana-2026-03-01-194124.png", price:290, stars:"★★★★★", rating:"4.8 (380)", specs:"Прокторин фітосвічки від «Рослина Карпат» — натуральний засіб для оздоровлення при геморої, тріщинах заднього проходу та атрофічному проктиті. Вони мають кровоспинну, протизапальну, антимікробну та протипухлинну дію, знімають запалення тканин та сприяють загоєнню ран. Препарат допомагає при захворюваннях товстої кишки, позбавляє від закрепів, зменшує біль, свербіж та набряк. Склад: екстракти рослин з венотонізуючою та загоювальною дією. Рекомендується вводити ректально по 1 свічці на ніч курсом 10 днів для полегшення симптомів.", reviews:"Лікує, а не маскує ★★★★★"},
+
+  // Чоловіче здоров'я
+  {id:430, cat:"male", title:"Простарин-N фітосвічки", img:"https://i.postimg.cc/BtWDgCXF/Znimok-ekrana-2026-03-01-194222.png", price:290, stars:"★★★★★", rating:"4.9 (590)", specs:"Простарин-N фітосвічки від «Рослина Карпат» — натуральний засіб для покращення функціонального стану простати при хронічному простатиті та аденомі. Вони усувають ускладнення після операцій, зменшують запалення, покращують сечовипускання та знімають нічні позиви. Препарат сприяє нормалізації кровообігу в малому тазу, зменшує набряк простати та допомагає при тромбофлебіті. Склад: жир рослинний, екстракти омели білої, трави хамеріон, листя кропиви, коріння солодки. Рекомендується вводити ректально по 1 свічці на ніч курсом 10-20 днів.", reviews:"Ніч перестав бігати в туалет ★★★★★"},
+  {id:431, cat:"male", title:"Фаворит-прост", img:"https://i.postimg.cc/F1tcZx7j/Znimok-ekrana-2026-03-01-194240.png", price:305, stars:"★★★★★", rating:"4.8 (460)", specs:"Фаворит-прост від «Рослина Карпат» — комплексний засіб для підтримки чоловічого здоров'я, нормалізації балансу статевих гормонів та покращення мікроциркуляції крові. Він відновлює лібідо, еректильну функцію, підвищує витривалість організму та сприяє синтезу тестостерону. Препарат має загальнозміцнювальну, тонізуючу, протизапальну та антибактеріальну дію, нормалізує психічний стан. Склад на основі кореня маки перуанської та інших рослинних екстрактів. Рекомендується приймати по 1 таблетці 2 рази на день курсом 1 місяць для чоловіків після 40 років.", reviews:"Сила та впевненість повернулися ★★★★★"},
+
+  // Проти алергії
+  {id:440, cat:"antiallergy", title:"Фіалергін", img:"https://i.postimg.cc/90wZZkF9/Znimok-ekrana-2026-03-01-193819.png", price:290, stars:"★★★★★", rating:"4.7 (510)", specs:"Фіалергін від «Рослина Карпат» — натуральний засіб для подолання алергічних реакцій, який усуває свербіж, нежить, сльозотечу та полегшує стан. Він зміцнює організм, очищає від токсинів, нормалізує обмін речовин та має антигістамінну дію без сонливості. Препарат покращує роботу залоз внутрішньої секреції, печінки та нирок, сприяє виведенню алергенів. Склад: трава фіалки триколірної з флавоноїдами, сапонінами та вітамінами. Рекомендується приймати по 1 таблетці 2 рази на день курсом 1 місяць для профілактики алергії.", reviews:"Алергія на пилок майже не мучить ★★★★★"},
+
+  // Здоровий сон
+  {id:450, cat:"sleep", title:"Мелатонін Р.К.", img:"https://i.postimg.cc/630n0wtj/Znimok-ekrana-2026-03-01-192826.png", price:330, stars:"★★★★★", rating:"4.9 (840)", specs:"Мелатонін Р.К. від «Рослина Карпат» — натуральний комплекс для нормалізації циркадних ритмів, швидкого засинання та глибокого сну. Він знижує частоту пробуджень, допомагає позбутися головного болю, підвищує стресостійкість та адаптує організм до змін часових поясів. Препарат нормалізує психоемоційний стан, стимулює синтез ендорфінів та покращує ранкове самопочуття. Склад: мелатонін 3 мг з вітамінами B6 та B9. Рекомендується приймати по 1 таблетці за 30 хвилин до сну курсом 1 місяць.", reviews:"Засинаю за 15 хвилин ★★★★★"},
+
+  // Покращення пам'яті та уваги
+  {id:460, cat:"brain", title:"L-Глютамін Pro", img:"https://i.ibb.co/n8ZG3yj6/PXL-20260225-185846257.jpg", price:320, stars:"★★★★★", rating:"4.8 (390)", specs:"L-Глютамін Pro від «Рослина Карпат» — амінокислота для підтримки роботи мозку, нервової системи, імунітету та ШКТ. Вона нормалізує травлення, очищає кишечник від токсинів, знижує рівень холестерину та цукру, запобігає запорам. Препарат покращує пам'ять, концентрацію уваги, зменшує розумову втому та регулює баланс азоту. Склад: L-глютамін 300 мг, вітамін B6 0.6 мг, фолієва кислота 0.05 мг. Рекомендується приймати по 1 таблетці 2 рази на день курсом 1 місяць для людей з інтелектуальними навантаженнями.", reviews:"Голова свіжа весь день ★★★★★"},
+  {id:461, cat:"brain", title:"Гінкго білоба Lecithin", img:"https://i.postimg.cc/CxJNwyZm/Znimok-ekrana-2026-03-01-184305.png", price:310, stars:"★★★★★", rating:"4.9 (620)", specs:"Гінкго білоба Lecithin від «Рослина Карпат» — комплекс для покращення мозкового кровообігу, пам'яті та уваги. Він має антиоксидантну дію, нормалізує обмінні процеси в мозку, підвищує еластичність судин та покращує реологічні властивості крові. Препарат підвищує розумову та фізичну працездатність, знижує стомлюваність, зменшує шум у вухах та запаморочення. Склад: екстракт гінкго білоба, лецитин, розмарин. Рекомендується приймати по 1 таблетці 2 рази на день курсом 1-2 місяці для людей після 35 років.", reviews:"Пам'ятаю все, що читаю ★★★★★"}
+];
+
+let cart = [];
+let currentProduct = null;
+let currentCat = 'all';
+let currentSearch = '';
+
+// Пошук
+document.getElementById('search').addEventListener('input', e => {
+  currentSearch = e.target.value.toLowerCase().trim();
+  filterAndRender();
+});
+
+function filterAndRender() {
+  let filtered = products;
+  if (currentCat !== 'all') filtered = filtered.filter(p => p.cat === currentCat);
+  if (currentSearch) filtered = filtered.filter(p => p.title.toLowerCase().includes(currentSearch));
+  renderProducts(filtered);
+}
+
+function renderProducts(list) {
+  const grid = document.getElementById('products');
+  grid.innerHTML = '';
+  list.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.onclick = () => openModal(p);
+    card.innerHTML = `
+      <div class="img" style="background-image:url('${p.img}')">
+        ${p.badge ? `<div class="badge">${p.badge}</div>` : ''}
+      </div>
+      <div class="info">
+        <div class="title">${p.title}</div>
+        <div class="rating">${p.stars} ${p.rating}</div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span class="price">${p.price} ₴</span>
+          ${p.old ? `<span class="old-price">${p.old} ₴</span>` : ''}
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function openModal(p) {
+  currentProduct = p;
+  document.getElementById('modalTitle').textContent = p.title;
+  document.getElementById('modalImg').src = p.img;
+  document.getElementById('modalSpecs').innerHTML = p.specs || 'Детальна інформація скоро';
+  document.getElementById('modalReviews').innerHTML = p.reviews || 'Відгуки незабаром';
+  document.getElementById('modalPrice').textContent = p.price;
+  document.getElementById('productModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('productModal').classList.remove('show');
+}
+
+function addToCart(product) {
+  cart.push(product);
+  updateCartCount();
+  alert('✅ Додано в кошик: ' + product.title);
+}
+
+function updateCartCount() {
+  const count = cart.length;
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartItemsCount').textContent = count;
+}
+
+function toggleCart() {
+  const modal = document.getElementById('cartModal');
+  modal.classList.toggle('show');
+  if (modal.classList.contains('show')) renderCart();
+}
+
+function renderCart() {
+  const container = document.getElementById('cartItems');
+  container.innerHTML = '';
+  let total = 0;
+  cart.forEach((item, idx) => {
+    total += item.price;
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `
+      ${item.title} — ${item.price} ₴
+      <button onclick="removeFromCart(${idx})">×</button>
+    `;
+    container.appendChild(div);
+  });
+  document.getElementById('cartTotal').textContent = total;
+}
+
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  updateCartCount();
+  renderCart();
+}
+
+function checkout() {
+  if (cart.length === 0) return alert('Кошик порожній');
+  document.getElementById('checkoutModal').classList.add('show');
+  document.getElementById('cartModal').classList.remove('show');
+}
+
+function closeCheckoutModal() {
+  document.getElementById('checkoutModal').classList.remove('show');
+}
+
+// Закриття модалок кліком поза вікном
+document.querySelectorAll('.modal').forEach(modal => {
+  modal.addEventListener('click', e => {
+    if (e.target === modal) modal.classList.remove('show');
+  });
+});
+
+function submitOrder() {
+  const fullName = document.getElementById('fullName').value.trim();
+  const phone    = document.getElementById('phone').value.trim();
+  const city     = document.getElementById('city').value.trim();
+  const delivery = document.getElementById('deliveryService').value;
+  const address  = document.getElementById('address').value.trim();
+  const zip      = document.getElementById('zip').value.trim();
+  const comment  = document.getElementById('comment').value.trim();
+
+  if (!fullName || fullName.length < 3) return alertAndHighlight('fullName', 'Вкажіть прізвище та ім\'я');
+  if (!phone || phone.length < 9) return alertAndHighlight('phone', 'Вкажіть коректний телефон');
+  if (!city || city.length < 2) return alertAndHighlight('city', 'Вкажіть місто або село');
+  if (!delivery) return alertAndHighlight('deliveryService', 'Оберіть службу доставки');
+  if (!address || address.length < 3) return alertAndHighlight('address', 'Вкажіть відділення або адресу');
+
+  let message = `🛒 НОВЕ ЗАМОВЛЕННЯ з сайту Рослина Карпат\n\n`;
+  message += `👤 Клієнт: ${fullName}\n`;
+  message += `📞 Телефон: ${phone}\n`;
+  message += `🏠 Місто/село: ${city}\n`;
+  message += `🚚 Доставка: ${delivery}\n`;
+  message += `📍 Адреса: ${address}${zip ? ` (індекс ${zip})` : ''}\n`;
+  if (comment) message += `💬 Коментар: ${comment}\n\n`;
+  message += `Сума: ${document.getElementById('cartTotal').textContent} ₴\nТовари (${cart.length} шт):\n`;
+  cart.forEach(item => message += `• ${item.title} — ${item.price} ₴\n`);
+
+  // Заміни на свої дані!
+  const BOT_TOKEN = '8201421067:AAF3xlzlyCPjfSfg4scmyAUdqkGUp8OzTjg';
+  const CHAT_ID   = '1765697401';
+
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'Markdown' })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.ok) {
+      alert('Замовлення відправлено! Ми зв’яжемося з вами протягом 30 хвилин.');
+      cart = [];
+      updateCartCount();
+      closeCheckoutModal();
+    } else {
+      alert('Помилка відправки: ' + (data.description || 'перевірте токен/chat_id'));
+    }
+  })
+  .catch(err => alert('Помилка мережі: ' + err));
+}
+
+function alertAndHighlight(id, msg) {
+  const el = document.getElementById(id);
+  el.style.borderColor = 'red';
+  el.focus();
+  alert(msg);
+  setTimeout(() => el.style.borderColor = '#ddd', 4000);
+}
+
+// Фільтри
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCat = btn.dataset.cat;
+    filterAndRender();
+  });
+});
+
+// Початковий запуск
+document.addEventListener('DOMContentLoaded', filterAndRender);
+</script>
+<!-- Кнопка "Телефонувати" внизу справа -->
+<div id="call-button" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+  <button onclick="showCallOptions()"
+    style="width: 70px; height: 70px; border-radius: 50%; background: #25D366; color: white; border: none; font-size: 32px; box-shadow: 0 6px 20px rgba(0,0,0,0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">
+    <i class="fas fa-phone-alt"></i>
+  </button>
+
+  <!-- Вибір Viber / Telegram -->
+  <div id="call-options" style="display: none; position: absolute; bottom: 90px; right: 0; background: white; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.25); padding: 15px; width: 220px; text-align: center;">
+    <p style="margin: 0 0 12px; font-weight: bold; color: #333;">Зателефонувати або написати:</p>
+    <a href="tel:+380684461441" style="display: block; margin: 10px 0; padding: 12px; background: #0088cc; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+      Телефонувати 068 446 14 41
+    </a>
+    <a href="https://t.me/+380684461441" target="_blank" style="display: block; margin: 8px 0; padding: 12px; background: #0088cc; color: white; text-decoration: none; border-radius: 8px;">
+      Написати в Telegram
+    </a>
+    <a href="viber://chat?number=%2B380684461441" target="_blank" style="display: block; margin: 8px 0; padding: 12px; background: #7360F2; color: white; text-decoration: none; border-radius: 8px;">
+      Написати в Viber
+    </a>
+    <button onclick="hideCallOptions()" style="margin-top: 10px; background: #eee; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">
+      Закрити
+    </button>
+  </div>
+</div>
+
+<script>
+// Показати/сховати меню вибору
+function showCallOptions() {
+  document.getElementById('call-options').style.display = 'block';
+}
+function hideCallOptions() {
+  document.getElementById('call-options').style.display = 'none';
+}
+
+// Закривати меню, якщо клікнули поза ним
+document.addEventListener('click', function(e) {
+  const button = document.getElementById('call-button');
+  if (!button.contains(e.target)) {
+    hideCallOptions();
+  }
+});
+</script>
+</body>
+</html>
